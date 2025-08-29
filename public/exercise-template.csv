@@ -1,0 +1,42 @@
+name,category,description,muscleGroups,equipment,difficulty,instructions,videoUrl
+Barbell Squat,Strength,Basic barbell squat exercise,"Quadriceps,Glutes,Hamstrings","Barbell,Squat Rack",INTERMEDIATE,"Stand with feet shoulder-width apart, place barbell on upper back, squat down until thighs are parallel to ground, then stand back up",
+Deadlift,Strength,Classic deadlift exercise,"Lower Back,Hamstrings,Glutes,Quadriceps","Barbell,Weight Plates",ADVANCED,"Stand with feet hip-width apart, grip barbell with hands shoulder-width apart, lift bar by extending hips and knees, keep back straight",
+Bench Press,Strength,Flat bench press exercise,"Chest,Triceps,Shoulders","Barbell,Bench",INTERMEDIATE,"Lie on bench with feet flat on ground, grip barbell slightly wider than shoulders, lower bar to chest, then press back up",
+Pull-ups,Strength,Bodyweight pull-up exercise,"Back,Biceps,Shoulders",Pull-up Bar,ADVANCED,"Hang from pull-up bar with hands shoulder-width apart, pull body up until chin is above bar, then lower back down. Can be Assisted with bands. ",
+Push-ups,Strength,Bodyweight push-up exercise,"Chest,Triceps,Shoulders",None,BEGINNER,"Start in plank position, lower body until chest nearly touches ground, then push back up",
+Plank,Core,Static plank hold exercise,"Core,Shoulders",None,BEGINNER,"Hold body in straight line from head to heels, engage core muscles, hold position",
+Lunges,Strength,Single-leg lunge exercise,"Quadriceps,Glutes,Hamstrings",None,BEGINNER,"Step forward with one leg, lower body until both knees are bent at 90 degrees, then step back",
+Feet Elevated Inverted Row,Strength,Elevated feet inverted row,,None,BEGINNER,,
+Standing Military Press,Strength,Standing Military Press,Shoulders,Barbell,INTERMEDIATE,,
+Bicep curls,Strength,Bicep curls,,,BEGINNER,,
+skull crusher,Strength,skull crusher,,,BEGINNER,,
+weighted side plank,Core,weighted side plank,,,BEGINNER,,
+goblet hold rear foot elevated split squat,Strength,goblet hold rear foot elevated split squat,,,BEGINNER,,https://www.youtube.com/watch?v=s4mGqmcHOmA
+1/2 kneeling single arm cable vertical pull,Strength,1/2 kneeling single arm cable vertical pull,,,BEGINNER,,https://www.youtube.com/watch?v=OWvqEaT6Ohc
+1 arm 1 leg single leg deadlift,Strength,1 arm 1 leg single leg deadlift,,,BEGINNER,,https://www.youtube.com/watch?v=GoKjrvJi-Iw
+Single arm Dumbell bench press,Strength,Single arm Dumbell bench press,,,BEGINNER,,https://www.youtube.com/watch?v=X8zXg41yziI
+Lateral Squat,Strength,Lateral Squat,,,BEGINNER,,https://www.youtube.com/watch?v=SmSdX7vLMzc
+1/2 kneeling single arm shoulder press,Strength,1/2 kneeling single arm shoulder press,,,BEGINNER,,https://www.youtube.com/watch?v=N199TkAlTnw
+weighted single leg hip thrusts,Strength,weighted single leg hip thrusts,,,BEGINNER,,https://www.youtube.com/watch?v=5qnzUDDwm6c
+Single Arm dumbell rows,Strength,Single Arm dumbell rows,,,BEGINNER,,https://www.youtube.com/watch?v=wTqlJ0aoJlM
+Weighted Sit ups,Core,Weighted Sit ups,,,BEGINNER,,https://www.youtube.com/watch?v=kZvSaq192cg
+standing single leg calf raise,Strength,standing single leg calf raise,,,BEGINNER,,https://www.youtube.com/watch?v=KcTEGifMTDY
+goblet squat,Strength,A1. goblet squat,,,BEGINNER,,
+lat pull down,Strength,A2. lat pull down,,,BEGINNER,,
+dumbell or KB deadlift,Strength,B1. dumbell or KB deadlift,,,BEGINNER,,
+lying leg raises,Strength,B3. lying leg raises,,,BEGINNER,,
+inverted row,Strength,C1. inverted row,,,BEGINNER,,
+side plank ,Strength,C2. side plank ,,,BEGINNER,,
+standing dumbell shoulder press,Strength,C3. standing dumbell shoulder press,,,BEGINNER,,
+standing cable hip abduction,Strength,D1. standing cable hip abduction,,,BEGINNER,,
+standing cable hip adduction,Strength,D2. standing cable hip adduction,,,BEGINNER,,
+lying alternating leg raises,Core,A1. lying alternating leg raises,,,BEGINNER,,https://www.youtube.com/watch?v=gB9bRfuk8no
+oblique bicyles,Core,A2. oblique bicyles,,,BEGINNER,,https://www.youtube.com/watch?v=9FGilxCbdz8
+mountain climbers,Core,A3. mountain climbers,,,BEGINNER,,https://www.youtube.com/watch?v=zT-9L3CEcmk
+side plank crunch,Core,A4. side plank crunch,,,BEGINNER,,https://www.youtube.com/watch?v=5Dd8_3ZZeI8
+supermans,Core,A5. supermans,,,BEGINNER,,https://www.youtube.com/watch?v=J9zXkxUAfUA
+crunches,Core,A6. crunches,,,BEGINNER,,https://www.youtube.com/watch?v=Xyd_fa5zoEU
+V-ups,Core,A7. V-ups,,,BEGINNER,,https://www.youtube.com/watch?v=iP2fjvG0g3w
+heel touches (each heel),Core,A8. heel touches (each heel),,,BEGINNER,,https://www.youtube.com/watch?v=RW25fbkQxVQ
+
+

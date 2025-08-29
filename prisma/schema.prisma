@@ -1,0 +1,298 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                      String                 @id @default(cuid())
+  email                   String                 @unique
+  password                String
+  name                    String
+  role                    UserRole
+  createdAt               DateTime               @default(now())
+  updatedAt               DateTime               @updatedAt
+  trainerId               String?
+  accounts                Account[]
+  clients                 Client[]               @relation("TrainerClients")
+  clientProfile           Client?                @relation("ClientUser")
+  assignedWorkouts        ClientWorkout[]        @relation("ClientWorkouts")
+  assignedWorkoutPrograms ClientWorkoutProgram[] @relation("ClientWorkoutPrograms")
+  sessions                Session[]
+  trainer                 User?                  @relation("TrainerClients", fields: [trainerId], references: [id])
+  trainees                User[]                 @relation("TrainerClients")
+  createdWorkouts         Workout[]              @relation("WorkoutCreator")
+  createdWorkoutPrograms  WorkoutProgram[]       @relation("WorkoutProgramCreator")
+}
+
+model Client {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  trainerId         String?
+  goals             String?
+  notes             String?
+  subscriptionStatus SubscriptionStatus @default(INACTIVE)
+  subscriptionPlan  SubscriptionPlan?
+  subscriptionStart DateTime?
+  subscriptionEnd   DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  trainer           User?    @relation("TrainerClients", fields: [trainerId], references: [id], onDelete: Cascade)
+  user              User     @relation("ClientUser", fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Exercise {
+  id                  String               @id @default(cuid())
+  name                String
+  category            String
+  description         String?
+  muscleGroups        String[]
+  equipment           String[]
+  difficulty          ExerciseDifficulty
+  instructions        String?
+  videoUrl            String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  workoutDayExercises WorkoutDayExercise[]
+  workoutExercises    WorkoutExercise[]
+  progress            WorkoutProgress[]
+}
+
+model WorkoutProgram {
+  id          String                 @id @default(cuid())
+  name        String
+  description String?
+  category    String?
+  difficulty  WorkoutDifficulty?
+  totalDays   Int                    @default(7)
+  isPublic    Boolean                @default(false)
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+  creatorId   String
+  assignedTo  ClientWorkoutProgram[]
+  days        WorkoutDay[]
+  creator     User                   @relation("WorkoutProgramCreator", fields: [creatorId], references: [id])
+}
+
+model WorkoutDay {
+  id                String               @id @default(cuid())
+  programId         String
+  dayNumber         Int
+  name              String?
+  isRestDay         Boolean              @default(false)
+  estimatedDuration Int?
+  notes             String?
+  program           WorkoutProgram       @relation(fields: [programId], references: [id], onDelete: Cascade)
+  exercises         WorkoutDayExercise[]
+
+  @@unique([programId, dayNumber])
+}
+
+model WorkoutDayExercise {
+  id         String     @id @default(cuid())
+  dayId      String
+  exerciseId String
+  order      Int
+  sets       Int
+  reps       String
+  rest       String
+  notes      String?
+  day        WorkoutDay @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  exercise   Exercise   @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@unique([dayId, exerciseId, order])
+}
+
+model Workout {
+  id                String             @id @default(cuid())
+  name              String
+  description       String?
+  category          String?
+  difficulty        WorkoutDifficulty?
+  estimatedDuration Int?
+  isPublic          Boolean            @default(false)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  creatorId         String
+  assignedTo        ClientWorkout[]
+  creator           User               @relation("WorkoutCreator", fields: [creatorId], references: [id])
+  exercises         WorkoutExercise[]
+}
+
+model WorkoutExercise {
+  id         String   @id @default(cuid())
+  workoutId  String
+  exerciseId String
+  order      Int
+  sets       Int
+  reps       String
+  rest       String
+  notes      String?
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  workout    Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+
+  @@unique([workoutId, exerciseId, order])
+}
+
+model ClientWorkoutProgram {
+  id            String               @id @default(cuid())
+  clientId      String
+  programId     String
+  startDate     DateTime
+  currentDay    Int                  @default(1)
+  status        WorkoutProgramStatus @default(ACTIVE)
+  notes         String?
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  client        User                 @relation("ClientWorkoutPrograms", fields: [clientId], references: [id], onDelete: Cascade)
+  program       WorkoutProgram       @relation(fields: [programId], references: [id], onDelete: Cascade)
+  dailyProgress WorkoutDayProgress[]
+  dayAssignments ProgramDayAssignment[]
+}
+
+model ProgramDayAssignment {
+  id                      String               @id @default(cuid())
+  clientWorkoutProgramId  String
+  dayNumber               Int
+  scheduledDate           DateTime
+  status                  WorkoutStatus        @default(SCHEDULED)
+  notes                   String?
+  completedAt             DateTime?
+  createdAt               DateTime             @default(now())
+  updatedAt               DateTime             @updatedAt
+  
+  clientWorkoutProgram    ClientWorkoutProgram @relation(fields: [clientWorkoutProgramId], references: [id], onDelete: Cascade)
+  
+  @@unique([clientWorkoutProgramId, dayNumber])
+}
+
+model ClientWorkout {
+  id            String            @id @default(cuid())
+  clientId      String
+  workoutId     String
+  scheduledDate DateTime
+  completedAt   DateTime?
+  status        WorkoutStatus     @default(SCHEDULED)
+  notes         String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  client        User              @relation("ClientWorkouts", fields: [clientId], references: [id], onDelete: Cascade)
+  workout       Workout           @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  progress      WorkoutProgress[]
+}
+
+model WorkoutDayProgress {
+  id                     String               @id @default(cuid())
+  clientWorkoutProgramId String
+  dayNumber              Int
+  completedAt            DateTime             @default(now())
+  status                 WorkoutDayStatus     @default(COMPLETED)
+  notes                  String?
+  clientWorkoutProgram   ClientWorkoutProgram @relation(fields: [clientWorkoutProgramId], references: [id], onDelete: Cascade)
+}
+
+model WorkoutProgress {
+  id              String        @id @default(cuid())
+  clientWorkoutId String
+  exerciseId      String
+  sets            Int
+  reps            String
+  weight          Float?
+  time            Int?
+  distance        Float?
+  notes           String?
+  completedAt     DateTime      @default(now())
+  clientWorkout   ClientWorkout @relation(fields: [clientWorkoutId], references: [id], onDelete: Cascade)
+  exercise        Exercise      @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+}
+
+enum UserRole {
+  TRAINER
+  CLIENT
+  ADMIN
+}
+
+enum ExerciseDifficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum WorkoutDifficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum WorkoutStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  MISSED
+  CANCELLED
+}
+
+enum WorkoutProgramStatus {
+  ACTIVE
+  COMPLETED
+  PAUSED
+  CANCELLED
+}
+
+enum WorkoutDayStatus {
+  COMPLETED
+  PARTIALLY_COMPLETED
+  MISSED
+  REST_DAY
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  INACTIVE
+  EXPIRED
+  CANCELLED
+  PENDING
+}
+
+enum SubscriptionPlan {
+  BASIC
+  PRO
+  ELITE
+}

@@ -1,0 +1,896 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { useSession } from "next-auth/react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Plus, Dumbbell, Calendar, Users, XCircle, CheckCircle, Edit, FileText, Trash2, Save, X, Search } from "lucide-react"
+import Link from "next/link"
+
+interface Workout {
+  id: string
+  name: string
+  description: string
+  category: string
+  difficulty: string
+  isPublic: boolean
+  exercises: Array<{
+    exercise: {
+      name: string
+    }
+  }>
+  creator: {
+    name: string
+  }
+}
+
+export default function TemplatesPage() {
+  const { data: session } = useSession()
+  const [workouts, setWorkouts] = useState<Workout[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null)
+  const [isEditing, setIsEditing] = useState(false)
+  const [editedExercises, setEditedExercises] = useState<any[]>([])
+  const [showAddExerciseForm, setShowAddExerciseForm] = useState(false)
+  const [newExercise, setNewExercise] = useState({
+    exerciseId: "",
+    name: "",
+    category: "",
+    sets: 3,
+    reps: "10",
+    rest: "60s",
+    notes: ""
+  })
+  const [availableExercises, setAvailableExercises] = useState<any[]>([])
+  const [exerciseSearch, setExerciseSearch] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("")
+
+  useEffect(() => {
+    if (session?.user) {
+      fetchWorkouts()
+      fetchAvailableExercises()
+    }
+  }, [session])
+
+  const fetchWorkouts = async () => {
+    try {
+      setIsLoading(true)
+      
+      // Fetch both single-day workouts and multi-day workout programs
+      const [workoutsResponse, programsResponse] = await Promise.all([
+        fetch('/api/workouts'),
+        fetch('/api/workout-programs')
+      ])
+      
+      let allWorkouts: any[] = []
+      
+      if (workoutsResponse.ok) {
+        const workoutsData = await workoutsResponse.json()
+        // Add type indicator for single-day workouts
+        const singleDayWorkouts = workoutsData.workouts.map((workout: any) => ({
+          ...workout,
+          type: 'single-day',
+          totalDays: 1
+        }))
+        allWorkouts.push(...singleDayWorkouts)
+      }
+      
+      if (programsResponse.ok) {
+        const programsData = await programsResponse.json()
+        // Add type indicator for multi-day programs
+        const multiDayPrograms = programsData.programs.map((program: any) => ({
+          ...program,
+          type: 'multi-day',
+          exercises: [] // Multi-day programs don't have direct exercises
+        }))
+        allWorkouts.push(...multiDayPrograms)
+      }
+      
+      // Sort by creation date (newest first)
+      allWorkouts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      
+      setWorkouts(allWorkouts)
+    } catch (error) {
+      console.error('Error fetching workouts:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const fetchAvailableExercises = async () => {
+    try {
+      const response = await fetch('/api/exercises')
+      if (response.ok) {
+        const data = await response.json()
+        setAvailableExercises(data.exercises || [])
+      }
+    } catch (error) {
+      console.error('Error fetching exercises:', error)
+    }
+  }
+
+  const exerciseCategories = [
+    "Strength", "Cardio", "Flexibility", "Balance", "Power", "Endurance", "Recovery"
+  ]
+
+  // Filter exercises based on search and category
+  const filteredExercises = availableExercises.filter(exercise =>
+    (exercise.name.toLowerCase().includes(exerciseSearch.toLowerCase()) ||
+     exercise.category.toLowerCase().includes(exerciseSearch.toLowerCase())) &&
+    (selectedCategory === "" || exercise.category === selectedCategory)
+  )
+
+  const getDifficultyColor = (difficulty: string) => {
+    switch (difficulty) {
+      case 'BEGINNER':
+        return 'bg-green-100 text-green-800'
+      case 'INTERMEDIATE':
+        return 'bg-yellow-100 text-yellow-800'
+      case 'ADVANCED':
+        return 'bg-red-100 text-red-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
+    }
+  }
+
+  const handleDeleteWorkout = async (workoutId: string, workoutType: string) => {
+    if (!confirm('Are you sure you want to delete this workout? This action cannot be undone.')) {
+      return
+    }
+
+    try {
+      let endpoint = `/api/workouts/${workoutId}`
+      if (workoutType === 'multi-day') {
+        endpoint = `/api/workout-programs/${workoutId}`
+      }
+
+      const response = await fetch(endpoint, {
+        method: 'DELETE'
+      })
+
+      if (response.ok) {
+        // Refresh the workouts list
+        await fetchWorkouts()
+        setSuccessMessage('Workout deleted successfully!')
+      } else {
+        const errorData = await response.json()
+        setError(errorData.error || 'Failed to delete workout')
+      }
+    } catch (error) {
+      console.error('Error deleting workout:', error)
+      setError('Failed to delete workout')
+    }
+  }
+
+  const handleViewDetails = (workout: Workout) => {
+    setSelectedWorkout(workout)
+    setEditedExercises([...workout.exercises])
+    setIsEditing(false)
+    setShowAddExerciseForm(false)
+  }
+
+  const handleEditExercises = () => {
+    setIsEditing(true)
+    if (selectedWorkout!.type === 'single-day') {
+      setEditedExercises([...selectedWorkout!.exercises])
+    }
+    // For multi-day programs, we'll redirect to the workout builder
+  }
+
+  const handleSaveExercises = async () => {
+    if (!selectedWorkout) return
+
+    // Multi-day programs need to be edited in the workout builder
+    if (selectedWorkout.type === 'multi-day') {
+      // Redirect to workout builder with the program ID for editing
+      window.location.href = `/workout-builder?edit=${selectedWorkout.id}&type=multi-day`
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/workouts/${selectedWorkout.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          exercises: editedExercises
+        }),
+      })
+
+      if (response.ok) {
+        setSuccessMessage('Workout exercises updated successfully!')
+        setIsEditing(false)
+        await fetchWorkouts() // Refresh the list
+        setSelectedWorkout(null)
+      } else {
+        const errorData = await response.json()
+        setError(errorData.error || 'Failed to update workout')
+      }
+    } catch (error) {
+      console.error('Error updating workout:', error)
+      setError('Failed to update workout')
+    }
+  }
+
+  const handleCancelEdit = () => {
+    setIsEditing(false)
+    setEditedExercises([...selectedWorkout!.exercises])
+    setShowAddExerciseForm(false)
+    setExerciseSearch("")
+    setNewExercise({
+      exerciseId: "",
+      name: "",
+      category: "",
+      sets: 3,
+      reps: "10",
+      rest: "60s",
+      notes: ""
+    })
+  }
+
+
+
+
+
+  const handleAddExerciseDirectly = (exercise: any) => {
+    const exerciseToAdd = {
+      id: Date.now().toString(),
+      exercise: {
+        id: exercise.id,
+        name: exercise.name,
+        description: exercise.description,
+        category: exercise.category,
+        difficulty: exercise.difficulty
+      },
+      sets: 3,
+      reps: "10",
+      rest: "60s",
+      notes: "",
+      order: editedExercises.length + 1
+    }
+
+    setEditedExercises(prev => [...prev, exerciseToAdd])
+    
+    // Show a brief success message
+    const successMessage = `${exercise.name} added to workout!`
+    setSuccessMessage(successMessage)
+    setTimeout(() => setSuccessMessage(null), 2000)
+  }
+
+  const handleUpdateExercise = (index: number, field: string, value: any) => {
+    const updatedExercises = [...editedExercises]
+    if (field === 'name' || field === 'description') {
+      updatedExercises[index].exercise[field] = value
+    } else {
+      updatedExercises[index][field] = value
+    }
+    setEditedExercises(updatedExercises)
+  }
+
+  const handleAddExercise = () => {
+    if (newExercise.exerciseId && newExercise.name) {
+      const exerciseToAdd = {
+        id: Date.now().toString(), // Temporary ID for editing
+        exercise: {
+          id: newExercise.exerciseId,
+          name: newExercise.name,
+          category: newExercise.category
+        },
+        sets: newExercise.sets,
+        reps: newExercise.reps,
+        rest: newExercise.rest,
+        notes: newExercise.notes
+      }
+      
+      setEditedExercises([...editedExercises, exerciseToAdd])
+      
+      // Reset form
+      setNewExercise({
+        exerciseId: "",
+        name: "",
+        category: "",
+        sets: 3,
+        reps: "10",
+        rest: "60s",
+        notes: ""
+      })
+      setShowAddExerciseForm(false)
+    }
+  }
+
+  const handleRemoveExercise = (index: number) => {
+    const updatedExercises = editedExercises.filter((_, i) => i !== index)
+    setEditedExercises(updatedExercises)
+  }
+
+
+
+  if (!session?.user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Please log in to view templates.</p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Link href="/dashboard">
+                <Button variant="ghost" size="sm">
+                  <Dumbbell className="h-4 w-4 mr-2" />
+                  Dashboard
+                </Button>
+              </Link>
+              <h1 className="text-2xl font-bold text-gray-900">Workout Library</h1>
+            </div>
+            {(session.user.role === "TRAINER" || session.user.role === "ADMIN") && (
+              <Link href="/workout-builder">
+                <Button>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create Workout
+                </Button>
+              </Link>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Success Message */}
+        {successMessage && (
+          <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
+            <div className="flex items-center">
+              <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
+              <p className="text-green-800 font-medium">{successMessage}</p>
+            </div>
+          </div>
+        )}
+
+
+        {/* Workouts Grid */}
+        {isLoading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading workouts...</p>
+          </div>
+        ) : workouts.length === 0 ? (
+          <Card>
+            <CardContent className="text-center py-12">
+              <Dumbbell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No workouts found
+              </h3>
+              <p className="text-gray-600 mb-4">
+                No workouts are available yet.
+              </p>
+              {(session.user.role === "TRAINER" || session.user.role === "ADMIN") && (
+                <Link href="/workout-builder">
+                  <Button>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Your First Workout
+                  </Button>
+                </Link>
+              )}
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {workouts.map((workout) => (
+              <Card key={workout.id} className="hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <CardTitle className="text-lg">{workout.name}</CardTitle>
+                    <div className="flex space-x-2">
+                      {workout.isPublic && (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          Public
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-600">{workout.description}</p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-500">Category:</span>
+                      <span className="font-medium">{workout.category || 'Custom'}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-500">Difficulty:</span>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(workout.difficulty)}`}>
+                        {workout.difficulty || 'Not specified'}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-500">Type:</span>
+                      <span className="font-medium">
+                        {workout.type === 'multi-day' ? `${workout.totalDays} Days` : 'Single Day'}
+                      </span>
+                    </div>
+                    {workout.type === 'single-day' ? (
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-500">Exercises:</span>
+                        <span className="font-medium">{workout.exercises.length}</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-500">Days:</span>
+                        <span className="font-medium">{workout.totalDays}</span>
+                      </div>
+                    )}
+                    {workout.creator && (
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-500">Created by:</span>
+                        <span className="font-medium">{workout.creator.name}</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="mt-6 flex space-x-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex-1"
+                      onClick={() => handleViewDetails(workout)}
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      View Details
+                    </Button>
+                    {(session.user.role === "TRAINER" || session.user.role === "ADMIN") && (
+                      <Link href={`/assign-workout?workoutId=${workout.id}&type=${workout.type}`}>
+                        <Button size="sm" className="flex-1">
+                          <Calendar className="h-4 w-4 mr-2" />
+                          Assign
+                        </Button>
+                      </Link>
+                    )}
+                    {workout.creator && workout.creator.id === session.user.id && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDeleteWorkout(workout.id, workout.type)}
+                        className="text-red-600 border-red-200 hover:bg-red-50"
+                      >
+                        <XCircle className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        {/* Error and Success Messages */}
+        {error && (
+          <div className="fixed bottom-4 right-4 bg-red-50 border border-red-200 rounded-lg p-4 max-w-md">
+            <div className="flex items-center space-x-2">
+              <XCircle className="h-5 w-5 text-red-600" />
+              <p className="text-red-800">{error}</p>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setError(null)}
+              className="mt-2 text-red-600 hover:text-red-800"
+            >
+              Dismiss
+            </Button>
+          </div>
+        )}
+
+        {successMessage && (
+          <div className="fixed bottom-4 right-4 bg-green-50 border border-green-200 rounded-lg p-4 max-w-md">
+            <div className="flex items-center space-x-2">
+              <CheckCircle className="h-5 w-5 text-green-600" />
+              <p className="text-green-800">{successMessage}</p>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSuccessMessage(null)}
+              className="mt-2 text-green-600 hover:text-green-800"
+            >
+              Dismiss
+            </Button>
+          </div>
+        )}
+
+        {/* Workout Details Modal */}
+        {selectedWorkout && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">{selectedWorkout.name}</h2>
+                    <p className="text-gray-600">{selectedWorkout.description}</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    {isEditing && (
+                      <>
+                        <Button
+                          variant="outline"
+                          onClick={handleCancelEdit}
+                          size="sm"
+                        >
+                          <X className="h-4 w-4 mr-2" />
+                          Cancel
+                        </Button>
+                        <Button
+                          onClick={handleSaveExercises}
+                          size="sm"
+                        >
+                          <Save className="h-4 w-4 mr-2" />
+                          Save Changes
+                        </Button>
+                      </>
+                    )}
+                                         {!isEditing && selectedWorkout.creator && selectedWorkout.creator.id === session.user.id && (
+                       <Button
+                         onClick={handleEditExercises}
+                         size="sm"
+                         variant="outline"
+                       >
+                         <Edit className="h-4 w-4 mr-2" />
+                         {selectedWorkout.type === 'multi-day' ? 'Edit Program' : 'Edit Exercises'}
+                       </Button>
+                     )}
+                    <Button
+                      variant="ghost"
+                      onClick={() => setSelectedWorkout(null)}
+                      size="sm"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Workout Info */}
+                <div className="grid grid-cols-3 gap-4 mb-6">
+                  <div className="text-center p-3 bg-gray-50 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600">
+                      {selectedWorkout.type === 'multi-day' ? selectedWorkout.totalDays : selectedWorkout.exercises.length}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {selectedWorkout.type === 'multi-day' ? 'Days' : 'Exercises'}
+                    </div>
+                  </div>
+                  <div className="text-center p-3 bg-gray-50 rounded-lg">
+                    <div className="text-2xl font-bold text-green-600">{selectedWorkout.estimatedDuration || 'N/A'}</div>
+                    <div className="text-sm text-gray-600">Minutes</div>
+                  </div>
+                  <div className="text-center p-3 bg-gray-50 rounded-lg">
+                    <div className="text-2xl font-bold text-purple-600">{selectedWorkout.difficulty || 'N/A'}</div>
+                    <div className="text-sm text-gray-600">Difficulty</div>
+                  </div>
+                </div>
+
+                {/* Exercises Section */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        {selectedWorkout.type === 'multi-day' ? 'Program Days' : 'Exercises'}
+                      </h3>
+                      <p className="text-sm text-gray-500">
+                        {selectedWorkout.type === 'multi-day' 
+                          ? `${selectedWorkout.totalDays} day program`
+                          : `${(isEditing ? editedExercises : selectedWorkout.exercises).length} exercise${(isEditing ? editedExercises : selectedWorkout.exercises).length !== 1 ? 's' : ''} in workout`
+                        }
+                      </p>
+                    </div>
+                    {isEditing && selectedWorkout.type === 'single-day' && (
+                      <Button
+                        onClick={() => setShowAddExerciseForm(true)}
+                        size="sm"
+                        variant="outline"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Exercise
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* Exercises List */}
+                  <div className="space-y-3">
+                    {selectedWorkout.type === 'multi-day' ? (
+                      <div className="space-y-4">
+                        {selectedWorkout.workoutDays?.map((day: any, dayIndex: number) => (
+                          <div key={day.dayNumber} className="border border-gray-200 rounded-lg p-4">
+                            <div className="flex items-center justify-between mb-3">
+                              <h5 className="font-medium text-gray-900">
+                                {day.name || `Day ${day.dayNumber}`}
+                                {day.isRestDay && (
+                                  <span className="ml-2 text-sm text-gray-500">(Rest Day)</span>
+                                )}
+                              </h5>
+                              {!day.isRestDay && (
+                                <span className="text-sm text-gray-500">
+                                  {day.exercises?.length || 0} exercises
+                                </span>
+                              )}
+                            </div>
+                            
+                            {!day.isRestDay && day.exercises && day.exercises.length > 0 ? (
+                              <div className="space-y-2">
+                                {day.exercises.map((exercise: any, exerciseIndex: number) => (
+                                  <div key={exercise.id || exerciseIndex} className="flex items-center justify-between p-2 bg-gray-50 rounded border">
+                                    <div className="flex-1">
+                                      <div className="font-medium text-gray-900">{exercise.exercise?.name || exercise.name}</div>
+                                      <div className="text-sm text-gray-600">
+                                        {exercise.sets} × {exercise.reps} • {exercise.rest}
+                                        {exercise.notes && ` • ${exercise.notes}`}
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : day.isRestDay ? (
+                              <p className="text-gray-500 text-sm text-center py-2">Rest Day - No exercises scheduled</p>
+                            ) : (
+                              <p className="text-gray-500 text-sm text-center py-2">No exercises added yet</p>
+                            )}
+                          </div>
+                        ))}
+                        <div className="text-center py-4 text-gray-500">
+                          <p className="text-sm">Multi-day workout programs can be edited in the workout builder.</p>
+                          <p className="text-xs mt-1">Click "Edit Program" above to modify day-by-day exercises.</p>
+                        </div>
+                      </div>
+                    ) : (
+                      (isEditing ? editedExercises : selectedWorkout.exercises).map((exercise, index) => (
+                      <div key={exercise.id || index} className="border border-gray-200 rounded-lg p-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-2">
+                              <span className="text-sm font-medium text-gray-500">#{index + 1}</span>
+                              <h4 className="font-semibold text-gray-900">{exercise.exercise.name}</h4>
+                            </div>
+                            
+                            {isEditing ? (
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <div>
+                                  <label className="block text-xs text-gray-600 mb-1">Notes</label>
+                                  <input
+                                    type="text"
+                                    value={exercise.notes || ""}
+                                    onChange={(e) => handleUpdateExercise(index, 'notes', e.target.value)}
+                                    className="w-full text-sm border border-gray-300 rounded px-2 py-1"
+                                    placeholder="Optional notes"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-xs text-gray-600 mb-1">Sets</label>
+                                  <input
+                                    type="number"
+                                    value={exercise.sets}
+                                    onChange={(e) => handleUpdateExercise(index, 'sets', parseInt(e.target.value) || 0)}
+                                    className="w-full text-sm border border-gray-300 rounded px-2 py-1"
+                                    min="1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-xs text-gray-600 mb-1">Reps</label>
+                                  <input
+                                    type="text"
+                                    value={exercise.reps}
+                                    onChange={(e) => handleUpdateExercise(index, 'reps', e.target.value)}
+                                    className="w-full text-sm border border-gray-300 rounded px-2 py-1"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="block text-xs text-gray-600 mb-1">Rest</label>
+                                  <input
+                                    type="text"
+                                    value={exercise.rest}
+                                    onChange={(e) => handleUpdateExercise(index, 'rest', e.target.value)}
+                                    className="w-full text-sm border border-gray-300 rounded px-2 py-1"
+                                  />
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="grid grid-cols-3 gap-4 text-sm text-gray-600">
+                                <div>
+                                  <span className="font-medium">Category:</span> {exercise.exercise.category}
+                                </div>
+                                <div>
+                                  <span className="font-medium">Sets:</span> {exercise.sets}
+                                </div>
+                                <div>
+                                  <span className="font-medium">Reps:</span> {exercise.reps}
+                                </div>
+                                <div>
+                                  <span className="font-medium">Rest:</span> {exercise.rest}
+                                </div>
+                                {exercise.notes && (
+                                  <div className="col-span-3">
+                                    <span className="font-medium">Notes:</span> {exercise.notes}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          
+                          {isEditing && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleRemoveExercise(index)}
+                              className="text-red-600 hover:text-red-700 ml-2"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                    )}
+                  </div>
+
+                  {/* Add Exercise Form */}
+                  {isEditing && showAddExerciseForm && (
+                    <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="font-medium text-gray-900">Add Exercise to Workout</h4>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setShowAddExerciseForm(false)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      
+                      {/* Exercise Search and Selection */}
+                      <div className="mb-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                          <div className="relative">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                            <input
+                              type="text"
+                              placeholder="Search exercises..."
+                              value={exerciseSearch}
+                              onChange={(e) => setExerciseSearch(e.target.value)}
+                              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+                          <select
+                            value={selectedCategory}
+                            onChange={(e) => setSelectedCategory(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          >
+                            <option value="">All Categories</option>
+                            {exerciseCategories.map(category => (
+                              <option key={category} value={category}>{category}</option>
+                            ))}
+                          </select>
+                        </div>
+                        
+                        {/* Available Exercises */}
+                        <div className="max-h-48 overflow-y-auto border border-gray-200 rounded-md p-2 bg-white">
+                          {filteredExercises.length === 0 ? (
+                            <p className="text-gray-500 text-center py-4 text-sm">No exercises found</p>
+                          ) : (
+                            <div className="space-y-2">
+                              {filteredExercises.map((exercise) => (
+                                <div
+                                  key={exercise.id}
+                                  className="flex items-center justify-between p-2 border border-gray-200 rounded hover:bg-blue-50 cursor-pointer"
+                                  onClick={() => {
+                                    setNewExercise({
+                                      exerciseId: exercise.id,
+                                      name: exercise.name,
+                                      category: exercise.category,
+                                      sets: 3,
+                                      reps: "10",
+                                      rest: "60s",
+                                      notes: ""
+                                    })
+                                  }}
+                                >
+                                  <div>
+                                    <div className="font-medium text-gray-900">{exercise.name}</div>
+                                    <div className="text-sm text-gray-600">{exercise.category}</div>
+                                  </div>
+                                  {newExercise.exerciseId === exercise.id && (
+                                    <CheckCircle className="h-4 w-4 text-green-600" />
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {/* Exercise Configuration */}
+                      {newExercise.exerciseId && (
+                        <div className="border-t pt-4">
+                          <h5 className="font-medium text-gray-900 mb-3">Configure Exercise</h5>
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                            <div>
+                              <label className="block text-xs text-gray-600 mb-1">Sets</label>
+                              <input
+                                type="number"
+                                value={newExercise.sets}
+                                onChange={(e) => setNewExercise({ ...newExercise, sets: parseInt(e.target.value) || 0 })}
+                                className="w-full text-sm border border-gray-300 rounded px-2 py-1"
+                                min="1"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs text-gray-600 mb-1">Reps</label>
+                              <input
+                                type="text"
+                                value={newExercise.reps}
+                                onChange={(e) => setNewExercise({ ...newExercise, reps: e.target.value })}
+                                className="w-full text-sm border border-gray-300 rounded px-2 py-1"
+                                placeholder="10"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs text-gray-600 mb-1">Rest</label>
+                              <input
+                                type="text"
+                                value={newExercise.rest}
+                                onChange={(e) => setNewExercise({ ...newExercise, rest: e.target.value })}
+                                className="w-full text-sm border border-gray-300 rounded px-2 py-1"
+                                placeholder="60s"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs text-gray-600 mb-1">Notes</label>
+                              <input
+                                type="text"
+                                value={newExercise.notes}
+                                onChange={(e) => setNewExercise({ ...newExercise, notes: e.target.value })}
+                                className="w-full text-sm border border-gray-300 rounded px-2 py-1"
+                                placeholder="Optional"
+                              />
+                            </div>
+                          </div>
+                          
+                          <div className="flex justify-end space-x-2 mt-4">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setShowAddExerciseForm(false)}
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              size="sm"
+                              onClick={handleAddExercise}
+                              disabled={!newExercise.exerciseId}
+                            >
+                              <Plus className="h-4 w-4 mr-2" />
+                              Add Exercise
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        )}
+      </main>
+    </div>
+  )
+}
+
