@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useSession, signOut } from "next-auth/react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -73,16 +73,32 @@ interface WorkoutProgramAssignment {
 type Assignment = WorkoutAssignment | WorkoutProgramAssignment
 
 export default function SchedulePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SchedulePageContent />
+    </Suspense>
+  )
+}
+
+function SchedulePageContent() {
   const { data: session, status } = useSession()
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const clientId = searchParams.get('clientId')
+  
+  // Get search params without useSearchParams
+  const [clientId, setClientId] = useState<string | null>(null)
   const [assignments, setAssignments] = useState<Assignment[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [currentWeek, setCurrentWeek] = useState(new Date())
   const [clientName, setClientName] = useState<string>('')
+  
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search)
+      setClientId(urlParams.get('clientId'))
+    }
+  }, [])
 
   useEffect(() => {
     if (status === "loading") return

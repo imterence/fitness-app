@@ -889,7 +889,15 @@ async function importExercisesFromCSV(csvFilePath: string) {
     const records = parse(csvContent, {
       columns: true,
       skip_empty_lines: true
-    })
+    }) as Array<{
+      name: string
+      category: string
+      description: string
+      muscleGroups: string
+      equipment: string
+      difficulty: string
+      instructions: string
+    }>
 
     for (const record of records) {
       await prisma.exercise.create({
@@ -899,7 +907,7 @@ async function importExercisesFromCSV(csvFilePath: string) {
           description: record.description,
           muscleGroups: record.muscleGroups.split(',').map((mg: string) => mg.trim()),
           equipment: record.equipment.split(',').map((eq: string) => eq.trim()),
-          difficulty: record.difficulty.toUpperCase(),
+          difficulty: record.difficulty.toUpperCase() as 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED',
           instructions: record.instructions
         }
       })

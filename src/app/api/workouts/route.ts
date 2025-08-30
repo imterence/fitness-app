@@ -115,9 +115,9 @@ export async function POST(request: NextRequest) {
     } catch (exerciseError) {
       console.error("Failed to create workout with exercises, trying without exercises:", exerciseError)
       console.error("Exercise error details:", {
-        message: exerciseError.message,
-        code: exerciseError.code,
-        meta: exerciseError.meta
+        message: exerciseError instanceof Error ? exerciseError.message : 'Unknown error',
+        code: (exerciseError as any)?.code,
+        meta: (exerciseError as any)?.meta
       })
       
       // Fallback: create workout without exercises

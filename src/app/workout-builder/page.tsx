@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useSession } from "next-auth/react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, CheckCircle, AlertCircle, Users, Edit } from "lucide-react"
@@ -30,9 +30,16 @@ interface WorkoutData {
 }
 
 export default function WorkoutBuilderPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <WorkoutBuilderContent />
+    </Suspense>
+  )
+}
+
+function WorkoutBuilderContent() {
   const { data: session, status } = useSession()
   const router = useRouter()
-  const searchParams = useSearchParams()
   const [isSaving, setIsSaving] = useState(false)
   const [saveStatus, setSaveStatus] = useState<{
     type: 'success' | 'error' | null
@@ -72,15 +79,20 @@ export default function WorkoutBuilderPage() {
 
   // Check for edit mode and fetch existing program data
   useEffect(() => {
-    const editParam = searchParams.get('edit')
-    const typeParam = searchParams.get('type')
-    
-    if (editParam && typeParam === 'multi-day') {
-      setEditMode(true)
-      setEditProgramId(editParam)
-      fetchExistingProgram(editParam)
+    // We'll handle this in a separate component that uses useSearchParams
+    // For now, we'll check if we're in edit mode from the URL
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search)
+      const editParam = urlParams.get('edit')
+      const typeParam = urlParams.get('type')
+      
+      if (editParam && typeParam === 'multi-day') {
+        setEditMode(true)
+        setEditProgramId(editParam)
+        fetchExistingProgram(editParam)
+      }
     }
-  }, [searchParams])
+  }, [])
 
   const fetchExistingProgram = async (programId: string) => {
     try {

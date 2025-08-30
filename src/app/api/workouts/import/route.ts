@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
               // Rest day - no exercises needed
               daysData.push({
                 dayNumber: dayData.dayNumber,
-                name: dayData.dayName,
+                name: dayData.name,
                 isRestDay: dayData.isRestDay,
                 estimatedDuration: workoutData.estimatedDuration,
                 notes: 'Rest day'
@@ -158,7 +158,7 @@ export async function POST(request: NextRequest) {
                     notes: exerciseData.notes
                   })
                 } else {
-                  console.log(`Skipping exercise "${exerciseData.exerciseName}" in day ${dayData.dayName} - not found in exercise library`)
+                  console.log(`Skipping exercise "${exerciseData.exerciseName}" in day ${dayData.name} - not found in exercise library`)
                 }
               }
               
@@ -166,7 +166,7 @@ export async function POST(request: NextRequest) {
               if (validExercises.length > 0) {
                 daysData.push({
                   dayNumber: dayData.dayNumber,
-                  name: dayData.dayName,
+                  name: dayData.name,
                   isRestDay: dayData.isRestDay,
                   estimatedDuration: workoutData.estimatedDuration,
                   notes: undefined,
@@ -175,7 +175,7 @@ export async function POST(request: NextRequest) {
                   }
                 })
               } else {
-                console.log(`Skipping day "${dayData.dayName}" - no valid exercises found`)
+                console.log(`Skipping day "${dayData.name}" - no valid exercises found`)
               }
             }
           }

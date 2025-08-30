@@ -1,8 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useSession } from "next-auth/react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -90,12 +90,30 @@ interface Client {
 }
 
 export default function AssignWorkoutPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AssignWorkoutContent />
+    </Suspense>
+  )
+}
+
+function AssignWorkoutContent() {
   const { data: session, status } = useSession()
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const clientId = searchParams.get('clientId')
-  const workoutId = searchParams.get('workoutId')
-  const workoutType = searchParams.get('type')
+  
+  // Get search params without useSearchParams
+  const [clientId, setClientId] = useState<string | null>(null)
+  const [workoutId, setWorkoutId] = useState<string | null>(null)
+  const [workoutType, setWorkoutType] = useState<string | null>(null)
+  
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search)
+      setClientId(urlParams.get('clientId'))
+      setWorkoutId(urlParams.get('workoutId'))
+      setWorkoutType(urlParams.get('type'))
+    }
+  }, [])
   
   // Helper function to format dates consistently without timezone issues
   const formatDateForDisplay = (dateString: string) => {

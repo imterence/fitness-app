@@ -74,8 +74,8 @@ export const authOptions: AuthOptions = {
     async session({ session, token }: { session: Session; token: JWT }) {
       console.log("Session Callback - Session:", session, "Token:", token)
       if (token) {
-        session.user.role = token.role
-        session.user.id = token.id
+        session.user.role = token.role as string
+        session.user.id = token.id as string
       }
       console.log("Session Callback - Final session:", session)
       return session

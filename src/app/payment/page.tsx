@@ -1,7 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useSearchParams } from "next/navigation"
+import { useState, useEffect, Suspense } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -56,11 +55,29 @@ const plans: Record<string, PlanDetails> = {
 }
 
 export default function PaymentPage() {
-  const searchParams = useSearchParams()
-  const planId = searchParams.get('plan') || 'pro'
-  const plan = plans[planId]
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PaymentPageContent />
+    </Suspense>
+  )
+}
+
+function PaymentPageContent() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  
+  // Get plan from URL params without useSearchParams
+  const [planId, setPlanId] = useState('pro')
+  const [plan, setPlan] = useState(plans.pro)
+  
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search)
+      const planParam = urlParams.get('plan') || 'pro'
+      setPlanId(planParam)
+      setPlan(plans[planParam] || plans.pro)
+    }
+  }, [])
 
   useEffect(() => {
     // Load PayPal script
@@ -275,6 +292,8 @@ export default function PaymentPage() {
     </div>
   )
 }
+
+
 
 
 

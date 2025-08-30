@@ -27,7 +27,7 @@ export async function GET(
             email: true
           }
         },
-        workoutDays: {
+        days: {
           include: {
             exercises: {
               include: {
