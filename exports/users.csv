@@ -1,0 +1,10 @@
+id,email,name,role,createdAt
+"cmesp1jhq00007m30t85zffa1","admin@whateverfit.com","Admin User","ADMIN","Tue Aug 26 2025 23:21:18 GMT+0800 (Singapore Standard Time)"
+"cmesp1jht00017m30bvfifug9","trainer@whateverfit.com","John Trainer","TRAINER","Tue Aug 26 2025 23:21:18 GMT+0800 (Singapore Standard Time)"
+"cmesp1jht00027m30v3rpl1m8","mike.trainer@whateverfit.com","Mike Johnson","TRAINER","Tue Aug 26 2025 23:21:18 GMT+0800 (Singapore Standard Time)"
+"cmesp1jhu00037m30dlzd3j9b","lisa.trainer@whateverfit.com","Lisa Chen","TRAINER","Tue Aug 26 2025 23:21:18 GMT+0800 (Singapore Standard Time)"
+"cmesp1jhv00047m300fcpa0nw","client@whateverfit.com","Sarah Client","CLIENT","Tue Aug 26 2025 23:21:18 GMT+0800 (Singapore Standard Time)"
+"cmesp1jhv00057m301ciqf7gz","james.client@whateverfit.com","James Wilson","CLIENT","Tue Aug 26 2025 23:21:18 GMT+0800 (Singapore Standard Time)"
+"cmesp1jhw00067m30ebw6cuc4","emma.client@whateverfit.com","Emma Rodriguez","CLIENT","Tue Aug 26 2025 23:21:18 GMT+0800 (Singapore Standard Time)"
+"cmesp1jhw00077m30jqwhr9q2","david.client@whateverfit.com","David Kim","CLIENT","Tue Aug 26 2025 23:21:18 GMT+0800 (Singapore Standard Time)"
+"cmesp1jhx00087m3049ffcli6","sophia.client@whateverfit.com","Sophia Thompson","CLIENT","Tue Aug 26 2025 23:21:18 GMT+0800 (Singapore Standard Time)"

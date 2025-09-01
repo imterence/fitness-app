@@ -303,34 +303,27 @@ export default function ClientsPage() {
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-4 sm:h-16 space-y-4 sm:space-y-0">
             <div className="flex items-center space-x-4">
               <Link href="/dashboard">
                 <Button variant="ghost" size="sm">
                   <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Dashboard
+                  <span className="hidden sm:inline">Back to Dashboard</span>
+                  <span className="sm:hidden">Back</span>
                 </Button>
               </Link>
-              <h1 className="text-2xl font-bold text-gray-900">Client Management</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Client Management</h1>
             </div>
             
-			{/*
-            <div className="flex items-center space-x-4">
-              <Button onClick={fetchClients} variant="outline" size="sm">
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Refresh
-              </Button>
-              
-              <Link href="/create-workout">
-                <Button>
+            <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto">
+              <Link href="/create-workout" className="flex-1 sm:flex-none">
+                <Button className="w-full sm:w-auto">
                   <Plus className="h-4 w-4 mr-2" />
-                  Create Workout
+                  <span className="hidden sm:inline">Create Workout</span>
+                  <span className="sm:hidden">Create</span>
                 </Button>
               </Link>
-						  
             </div>
-			*/}
-			
           </div>
         </div>
       </div>
@@ -507,11 +500,11 @@ export default function ClientsPage() {
         {/* Available Clients Section */}
         {availableClients.length > 0 && (
           <div className="mb-8">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 space-y-2 sm:space-y-0">
               <h2 className="text-xl font-semibold text-gray-900">
                 {session?.user?.role === "ADMIN" ? "Available Clients" : "Unassigned Clients"}
               </h2>
-              <Badge variant="secondary">{availableClients.length} available</Badge>
+              <Badge variant="secondary" className="self-start sm:self-auto">{availableClients.length} available</Badge>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -698,19 +691,19 @@ export default function ClientsPage() {
 
         {/* Assigned Clients Section */}
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0">
             <h2 className="text-xl font-semibold text-gray-900">
               {session?.user?.role === "ADMIN" ? "All Clients" : "My Assigned Clients"}
             </h2>
-            <div className="flex items-center space-x-4">
-              <Badge variant="secondary">{assignedClients.length} assigned</Badge>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
+              <Badge variant="secondary" className="self-start sm:self-auto">{assignedClients.length} assigned</Badge>
               
               {/* Trainer Filter - Admin Only */}
               {session?.user?.role === "ADMIN" && trainers.length > 0 && (
-                <div className="flex items-center space-x-2">
-                  <label className="text-sm text-gray-600">Filter by assigned trainer:</label>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
+                  <label className="text-sm text-gray-600 whitespace-nowrap">Filter by assigned trainer:</label>
                   <select
-                    className="text-sm border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="text-sm border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
                     onChange={(e) => {
                       // TODO: Implement trainer filtering
                       if (e.target.value) {
@@ -731,10 +724,10 @@ export default function ClientsPage() {
               
               {/* Subscription Status Filter - Admin Only */}
               {session?.user?.role === "ADMIN" && (
-                <div className="flex items-center space-x-2">
-                  <label className="text-sm text-gray-600">Filter by subscription:</label>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
+                  <label className="text-sm text-gray-600 whitespace-nowrap">Filter by subscription:</label>
                   <select
-                    className="text-sm border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="text-sm border border-gray-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
                     onChange={(e) => {
                       // TODO: Implement subscription filtering
                       if (e.target.value) {

@@ -75,3 +75,5 @@ Push-ups,Strength,Bodyweight push-up exercise,"Chest,Triceps,Shoulders",None,BEG
 
 
 
+
+

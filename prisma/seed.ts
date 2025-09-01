@@ -24,6 +24,10 @@ async function main() {
 
   console.log('🧹 Cleared existing data')
 
+  // Import exercises from CSV first
+  console.log('📊 Importing exercises from CSV...')
+  await importExercisesFromCSV('./exercise-template.csv')
+  
   // Create users
   const hashedPassword = await bcrypt.hash('password123', 12)
 
@@ -885,7 +889,11 @@ async function main() {
 // Function to import exercises from CSV (for future use)
 async function importExercisesFromCSV(csvFilePath: string) {
   try {
+    console.log(`📁 Looking for CSV file at: ${csvFilePath}`)
+    
     const csvContent = readFileSync(csvFilePath, 'utf-8')
+    console.log(`📄 CSV file read successfully, content length: ${csvContent.length}`)
+    
     const records = parse(csvContent, {
       columns: true,
       skip_empty_lines: true
@@ -899,7 +907,11 @@ async function importExercisesFromCSV(csvFilePath: string) {
       instructions: string
     }>
 
+    console.log(`📊 Parsed ${records.length} records from CSV`)
+    console.log('📋 First record:', records[0])
+
     for (const record of records) {
+      console.log(`➕ Creating exercise: ${record.name}`)
       await prisma.exercise.create({
         data: {
           name: record.name,
@@ -916,6 +928,7 @@ async function importExercisesFromCSV(csvFilePath: string) {
     console.log(`✅ Imported ${records.length} exercises from CSV`)
   } catch (error) {
     console.error('❌ Error importing exercises from CSV:', error)
+    console.error('Error details:', error)
   }
 }
 
