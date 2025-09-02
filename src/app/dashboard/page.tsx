@@ -224,26 +224,19 @@ export default function DashboardPage() {
             </button>
             {isTrainer ? (
               <>
-                <button
-                  onClick={handleWorkoutBuilderClick}
-                  className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-red-500 transition-colors"
-                >
-                  <Dumbbell className="h-4 w-4" />
-                  <span>Workout Builder</span>
-                </button>
-                <Link
-                  href="/assign-workout"
-                  className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-red-500 transition-colors"
-                >
-                  <Plus className="h-4 w-4" />
-                  <span>Assign Workout</span>
-                </Link>
                 <Link
                   href="/clients"
                   className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-red-500 transition-colors"
                 >
                   <Users className="h-4 w-4" />
                   <span>Clients</span>
+                </Link>
+                <Link
+                  href="/assign-workout"
+                  className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-red-500 transition-colors"
+                >
+                  <Plus className="h-4 w-4" />
+                  <span>Assign Workout</span>
                 </Link>
                 <button
                   onClick={handleWorkoutLibraryClick}

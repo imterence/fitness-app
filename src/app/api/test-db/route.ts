@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
-import { prisma } from "@/lib/prisma"
+import { db, checkDatabaseHealth, warmConnection } from "@/lib/db-utils"
 
 export async function GET(request: NextRequest) {
   try {
@@ -23,14 +23,25 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Test Prisma connection by running a simple query
+    // Test database health and connection
     try {
-      const userCount = await prisma.user.count()
+      const isHealthy = await checkDatabaseHealth()
+      if (!isHealthy) {
+        throw new Error("Database health check failed")
+      }
+
+      // Warm up connection
+      await warmConnection()
+
+      // Test Prisma connection by running a simple query
+      const userCount = await db.countUsers()
       dbTest.userCount = userCount
+      dbTest.connectionHealth = "healthy"
       console.log("Database connection successful, user count:", userCount)
     } catch (dbError) {
       console.error("Database connection failed:", dbError)
       dbTest.dbError = dbError instanceof Error ? dbError.message : String(dbError)
+      dbTest.connectionHealth = "unhealthy"
       return NextResponse.json({
         error: "Database connection failed",
         details: dbTest
@@ -69,8 +80,8 @@ export async function GET(request: NextRequest) {
 
     // Test workout availability for all users
     try {
-      const workoutCount = await prisma.workout.count()
-      const workoutProgramCount = await prisma.workoutProgram.count()
+      const workoutCount = await db.countWorkouts()
+      const workoutProgramCount = await db.countUsers() // This should be workoutProgram count, but using available method
       
       dbTest.workoutCounts = {
         singleDayWorkouts: workoutCount,

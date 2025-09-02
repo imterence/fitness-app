@@ -94,13 +94,6 @@ function SchedulePageContent() {
   const [clientName, setClientName] = useState<string>('')
   
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(window.location.search)
-      setClientId(urlParams.get('clientId'))
-    }
-  }, [])
-
-  useEffect(() => {
     if (status === "loading") return
     
     if (!session?.user) {
@@ -114,12 +107,30 @@ function SchedulePageContent() {
       return
     }
     
-    fetchAssignments()
+    // Get clientId from URL parameters
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search)
+      const urlClientId = urlParams.get('clientId')
+      setClientId(urlClientId)
+      
+      // Call fetchAssignments with the clientId
+      fetchAssignments(urlClientId)
+    }
   }, [session, status, router])
 
-  const fetchAssignments = async () => {
+  const fetchAssignments = async (urlClientId?: string | null) => {
     try {
       setIsLoading(true)
+      setError(null)
+      
+      const currentClientId = urlClientId || clientId
+      
+      console.log('Fetching assignments for:', { 
+        userRole: session?.user?.role, 
+        userId: session?.user?.id, 
+        clientId: currentClientId,
+        urlClientId: urlClientId
+      })
       
       // For clients, show their own schedule. For trainers/admins, require clientId
       if (session?.user?.role === "CLIENT") {
@@ -150,19 +161,27 @@ function SchedulePageContent() {
         }
       } else {
         // Trainer/Admin viewing specific client schedule
-        if (!clientId) {
+        if (!currentClientId) {
+          console.log('No clientId provided for trainer/admin, redirecting to clients page')
           router.push('/clients')
           return
         }
         
+        console.log('Fetching assignments for client:', currentClientId)
+        
         const [workoutResponse, programResponse] = await Promise.all([
-          fetch(`/api/workouts/assign?clientId=${clientId}`),
-          fetch(`/api/workout-programs/assign?clientId=${clientId}`)
+          fetch(`/api/workouts/assign?clientId=${currentClientId}`),
+          fetch(`/api/workout-programs/assign?clientId=${currentClientId}`)
         ])
         
         if (workoutResponse.ok && programResponse.ok) {
           const workoutData = await workoutResponse.json()
           const programData = await programResponse.json()
+          
+          console.log('API responses:', { 
+            workoutCount: workoutData.assignments?.length || 0, 
+            programCount: programData.assignments?.length || 0 
+          })
           
           // Transform workout program assignments to create individual day assignments for trainer view
           const transformedPrograms = programData.assignments.flatMap((prog: any) => {
@@ -214,7 +233,10 @@ function SchedulePageContent() {
             setClientName('Client')
           }
         } else {
-          setError('Failed to fetch assignments')
+          const workoutError = await workoutResponse.text()
+          const programError = await programResponse.text()
+          console.error('API errors:', { workoutError, programError })
+          setError(`Failed to fetch assignments. Workout API: ${workoutResponse.status}, Program API: ${programResponse.status}`)
         }
       }
     } catch (error) {
@@ -236,7 +258,7 @@ function SchedulePageContent() {
       })
 
       if (response.ok) {
-        fetchAssignments()
+        fetchAssignments(clientId)
       } else {
         console.error('Failed to update status')
       }
@@ -269,7 +291,7 @@ function SchedulePageContent() {
       }
 
       if (response.ok) {
-        fetchAssignments()
+        fetchAssignments(clientId)
         setSuccessMessage(`${isWorkoutProgram ? 'Workout program' : 'Workout'} assignment deleted successfully`)
       } else {
         const errorData = await response.json()
@@ -411,13 +433,15 @@ function SchedulePageContent() {
 
   const weekDates = getWeekDates(currentWeek)
 
-  // Show loading while checking authentication
+  // Show loading while checking authentication or fetching data
   if (status === "loading" || isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading Schedule...</p>
+          <p className="mt-4 text-gray-600">
+            {clientId ? `Loading ${clientName || 'client'}'s schedule...` : 'Loading Schedule...'}
+          </p>
         </div>
       </div>
     )
@@ -555,7 +579,7 @@ function SchedulePageContent() {
             const isCurrentDay = isToday(date)
             
             return (
-              <div key={index} className="min-h-[200px]">
+              <div key={index} className="min-h-[250px]">
                 {/* Day Header */}
                 <div className={`text-center p-3 rounded-t-lg border ${
                   isCurrentDay 
@@ -571,7 +595,7 @@ function SchedulePageContent() {
                 </div>
                 
                 {/* Day Content */}
-                <div className="bg-white border border-gray-200 rounded-b-lg p-2 min-h-[150px]">
+                <div className="bg-white border border-gray-200 rounded-b-lg p-3 min-h-[200px]">
                   {dayAssignments.length === 0 ? (
                     <div className="text-center text-gray-400 text-xs py-8">
                       No workouts
@@ -581,15 +605,18 @@ function SchedulePageContent() {
                       {dayAssignments.map((assignment) => (
                         <div
                           key={assignment.id}
-                          className={`rounded-lg p-2 hover:bg-blue-100 transition-colors ${
+                          className={`rounded-lg p-3 hover:shadow-md transition-all duration-200 ${
                             (assignment as any).isProgramDay 
-                              ? 'bg-green-50 border border-green-200' 
-                              : 'bg-blue-50 border border-blue-200'
+                              ? 'bg-green-50 border border-green-200 hover:bg-green-100' 
+                              : 'bg-blue-50 border border-blue-200 hover:bg-blue-100'
                           }`}
                         >
                           <div className="flex items-center justify-between mb-1">
                             <div className="flex items-center space-x-2">
-                              <span className={`text-xs font-medium line-clamp-1 ${
+                              <Dumbbell className={`h-3 w-3 ${
+                                (assignment as any).isProgramDay ? 'text-green-600' : 'text-blue-600'
+                              }`} />
+                              <span className={`text-sm font-semibold line-clamp-2 leading-tight ${
                                 (assignment as any).isProgramDay ? 'text-green-900' : 'text-blue-900'
                               }`}>
                                 {getAssignmentName(assignment)}

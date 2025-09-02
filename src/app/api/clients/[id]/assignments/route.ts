@@ -67,7 +67,12 @@ export async function GET(
           clientId: clientId
         },
         select: {
-          scheduledDate: true
+          scheduledDate: true,
+          workout: {
+            select: {
+              name: true
+            }
+          }
         }
       }),
       // Program day assignments - need to go through ClientWorkoutProgram first
@@ -78,7 +83,17 @@ export async function GET(
           }
         },
         select: {
-          scheduledDate: true
+          scheduledDate: true,
+          dayNumber: true,
+          clientWorkoutProgram: {
+            select: {
+              program: {
+                select: {
+                  name: true
+                }
+              }
+            }
+          }
         }
       })
     ])
@@ -92,14 +107,42 @@ export async function GET(
         startDate: true,
         program: {
           select: {
-            totalDays: true
+            totalDays: true,
+            name: true
           }
         }
       }
     })
 
+    // Create a map of dates to workout names
+    const dateWorkoutMap = new Map<string, string[]>()
+
+    // Helper function to add workout to date map
+    const addWorkoutToDate = (date: Date, workoutName: string) => {
+      const dateString = date.toISOString().split('T')[0] // YYYY-MM-DD format
+      if (!dateWorkoutMap.has(dateString)) {
+        dateWorkoutMap.set(dateString, [])
+      }
+      const workouts = dateWorkoutMap.get(dateString)!
+      if (!workouts.includes(workoutName)) {
+        workouts.push(workoutName)
+      }
+    }
+
+    // Process single workout assignments
+    for (const assignment of singleWorkoutAssignments) {
+      const date = new Date(assignment.scheduledDate)
+      addWorkoutToDate(date, assignment.workout.name)
+    }
+
+    // Process program day assignments
+    for (const assignment of programAssignments) {
+      const date = new Date(assignment.scheduledDate)
+      const workoutName = `${assignment.clientWorkoutProgram.program.name} - Day ${assignment.dayNumber}`
+      addWorkoutToDate(date, workoutName)
+    }
+
     // Calculate all dates for multi-day programs
-    const programDates = []
     for (const program of clientWorkoutPrograms) {
       const startDate = new Date(program.startDate)
       const totalDays = program.program.totalDays
@@ -107,45 +150,31 @@ export async function GET(
       for (let i = 0; i < totalDays; i++) {
         const programDate = new Date(startDate)
         programDate.setDate(startDate.getDate() + i)
-        programDates.push(programDate)
+        const workoutName = `${program.program.name} - Day ${i + 1}`
+        addWorkoutToDate(programDate, workoutName)
       }
     }
 
     console.log("API: Program calculations:", {
       clientWorkoutPrograms: clientWorkoutPrograms.length,
-      calculatedProgramDates: programDates.length,
-      sampleProgramDates: programDates.slice(0, 5)
+      singleWorkoutAssignments: singleWorkoutAssignments.length,
+      programAssignments: programAssignments.length,
+      dateWorkoutMapSize: dateWorkoutMap.size,
+      sampleEntries: Array.from(dateWorkoutMap.entries()).slice(0, 3)
     })
 
-    console.log("API: Raw assignment data:", {
-      singleWorkoutCount: singleWorkoutAssignments.length,
-      programCount: programAssignments.length,
-      singleWorkoutDates: singleWorkoutAssignments.map(a => a.scheduledDate),
-      programDates: programAssignments.map(a => a.scheduledDate)
+    // Convert map to object for JSON response
+    const scheduledDatesWithWorkouts = Object.fromEntries(dateWorkoutMap)
+    const uniqueDates = Array.from(dateWorkoutMap.keys()).sort()
+
+    console.log("API: Final processed data:", {
+      uniqueDates: uniqueDates.length,
+      sampleWorkouts: Object.entries(scheduledDatesWithWorkouts).slice(0, 3)
     })
-
-    // Combine all scheduled dates and format them as YYYY-MM-DD strings
-    const allDates = [
-      ...singleWorkoutAssignments.map(a => a.scheduledDate),
-      ...programAssignments.map(a => a.scheduledDate),
-      ...programDates // Add the calculated program dates
-    ]
-
-    // Convert to YYYY-MM-DD format and remove duplicates
-    const uniqueDates = [...new Set(
-      allDates.map(date => {
-        const d = new Date(date)
-        const year = d.getFullYear()
-        const month = String(d.getMonth() + 1).padStart(2, '0')
-        const day = String(d.getDate()).padStart(2, '0')
-        return `${year}-${month}-${day}`
-      })
-    )].sort()
-
-    console.log("API: Final processed dates:", uniqueDates)
 
     return NextResponse.json({
       scheduledDates: uniqueDates,
+      scheduledDatesWithWorkouts: scheduledDatesWithWorkouts,
       count: uniqueDates.length
     })
 

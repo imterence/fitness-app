@@ -360,12 +360,7 @@ export default function ClientPage() {
               </Button>
             </div>
             
-            <div className="flex items-center space-x-4">
-              <Button onClick={fetchAssignments} variant="outline" size="sm" className="bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white hover:border-gray-500 transition-all duration-200">
-                <Calendar className="h-4 w-4 mr-2" />
-                Refresh
-              </Button>
-            </div>
+
           </div>
         </div>
       </div>

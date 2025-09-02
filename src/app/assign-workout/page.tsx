@@ -161,6 +161,7 @@ function AssignWorkoutContent() {
   const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [clientScheduledDates, setClientScheduledDates] = useState<string[]>([])
+  const [clientScheduledDatesWithWorkouts, setClientScheduledDatesWithWorkouts] = useState<Record<string, string[]>>({})
 
   useEffect(() => {
     if (status === "authenticated" && session?.user) {
@@ -261,15 +262,19 @@ function AssignWorkoutContent() {
         const data = await response.json()
         console.log('Frontend: API response data:', data)
         setClientScheduledDates(data.scheduledDates || [])
+        setClientScheduledDatesWithWorkouts(data.scheduledDatesWithWorkouts || {})
         console.log('Frontend: Set client scheduled dates:', data.scheduledDates || [])
+        console.log('Frontend: Set client scheduled dates with workouts:', data.scheduledDatesWithWorkouts || {})
       } else {
         const errorData = await response.json()
         console.error('Frontend: Failed to fetch client scheduled dates:', errorData)
         setClientScheduledDates([])
+        setClientScheduledDatesWithWorkouts({})
       }
     } catch (error) {
       console.error('Frontend: Error fetching client scheduled dates:', error)
       setClientScheduledDates([])
+      setClientScheduledDatesWithWorkouts({})
     }
   }
 
@@ -713,6 +718,22 @@ function AssignWorkoutContent() {
                         }
                         setSearchTerm('')
                         setFilterType('all')
+                      }}
+                      size="sm" 
+                      variant="outline"
+                      className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                    >
+                      <Filter className="h-3 w-3 mr-1" />
+                      All
+                    </Button>
+
+                    <Button 
+                      onClick={() => {
+                        // Refresh the workouts list and calendar
+                        if (selectedClient) {
+                          fetchWorkouts(selectedClient.id)
+                          fetchClientScheduledDates(selectedClient.userId)
+                        }
                       }}
                       size="sm" 
                       variant="outline"
@@ -1247,6 +1268,9 @@ function AssignWorkoutContent() {
                           })
                         }
                         
+                                                // Get workout names for this date
+                        const workoutNames = clientScheduledDatesWithWorkouts[dateString] || []
+                        
                         return (
                           <button
                             key={index}
@@ -1254,26 +1278,34 @@ function AssignWorkoutContent() {
                             // TODO: ENABLE MULTIPLE WORKOUTS PER DAY - Allow selection of dates with existing workouts
                             // disabled={hasExistingWorkout}
                             className={`
-                              h-10 w-full text-sm rounded-lg border transition-all duration-200 hover:shadow-md flex items-center justify-center
+                              h-16 w-full text-xs rounded-lg border transition-all duration-200 hover:shadow-md flex flex-col items-center justify-center p-1
                               ${isSelected 
                                 ? 'bg-blue-500 text-white border-blue-500 shadow-md font-semibold' 
                                 : isInProgramSpan && programSpanDay > 0
                                   ? 'bg-blue-200 text-blue-800 border-blue-300 font-medium' // Lighter blue for program span days
-                                : hasExistingWorkout
-                                  ? 'bg-red-100 text-red-600 border-red-300 hover:bg-red-200 cursor-pointer' // Red but interactive with pointer cursor
-                                  : 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-300 cursor-pointer'
+                                  : hasExistingWorkout
+                                    ? 'bg-red-100 text-red-600 border-red-300 hover:bg-red-200 cursor-pointer' // Red but interactive with pointer cursor
+                                    : 'bg-white text-gray-700 border-gray-200 hover:bg-blue-50 hover:border-blue-300 cursor-pointer'
                               }
                               ${isToday ? 'ring-2 ring-blue-300 font-bold' : ''}
                             `}
                             title={
                               hasExistingWorkout 
-                                ? 'Date already has a workout assigned (can still select for additional workouts)'
+                                ? `Date already has workout(s) assigned: ${workoutNames.join(', ')} (can still select for additional workouts)`
                                 : isInProgramSpan && programSpanDay > 0
                                   ? `Day ${programSpanDay + 1} of ${selectedWorkout?.days?.length || 0}-day program`
                                   : ''
                             }
                           >
-                            {date.getDate()}
+                            <div className="font-semibold">{date.getDate()}</div>
+                            {hasExistingWorkout && workoutNames.length > 0 && (
+                              <div className="text-[10px] leading-tight text-center truncate w-full">
+                                {workoutNames.length === 1 
+                                  ? workoutNames[0].substring(0, 12) + (workoutNames[0].length > 12 ? '...' : '')
+                                  : `${workoutNames.length} workouts`
+                                }
+                              </div>
+                            )}
                           </button>
                         )
                      })}
@@ -1283,7 +1315,7 @@ function AssignWorkoutContent() {
                  {/* Calendar Legend */}
                  <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
                    <h4 className="font-medium text-gray-900 mb-2 text-sm">Calendar Legend</h4>
-                   <div className="flex items-center space-x-4 text-xs text-gray-600">
+                   <div className="grid grid-cols-2 gap-2 text-xs text-gray-600">
                      <div className="flex items-center space-x-2">
                        <div className="w-4 h-4 bg-white border border-gray-200 rounded"></div>
                        <span>Available</span>
@@ -1298,8 +1330,13 @@ function AssignWorkoutContent() {
                      </div>
                      <div className="flex items-center space-x-2">
                        <div className="w-4 h-4 bg-red-100 border border-red-300 rounded"></div>
-                       <span>Has Existing Workout (Still Selectable)</span>
+                       <span>Has Existing Workout</span>
                      </div>
+                   </div>
+                   <div className="mt-2 text-xs text-gray-500">
+                     <p>• Red boxes show existing workout names (truncated if long)</p>
+                     <p>• Multiple workouts per day are supported</p>
+                     <p>• Hover over red boxes to see full workout names</p>
                    </div>
                  </div>
 
