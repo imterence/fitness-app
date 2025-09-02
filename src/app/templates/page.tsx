@@ -706,7 +706,7 @@ export default function TemplatesPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <div>
@@ -717,13 +717,13 @@ export default function TemplatesPage() {
               <Button
                 onClick={() => setShowCSVImport(true)}
                 variant="outline"
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-900"
               >
                 <Upload className="h-4 w-4" />
                 Import CSV
               </Button>
               <Link href="/create-workout">
-                <Button className="flex items-center gap-2">
+                <Button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white">
                   <Plus className="h-4 w-4" />
                   Create Workout
                 </Button>
@@ -734,40 +734,40 @@ export default function TemplatesPage() {
       </div>
 
       {/* Navigation Menu */}
-      <nav className="bg-white border-b border-gray-200">
+      <nav className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-8">
             <Link
               href="/dashboard"
-              className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 hover:border-b-2 hover:border-red-500 transition-colors"
+              className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 hover:border-b-2 hover:border-red-600 transition-colors"
             >
               <Home className="h-4 w-4" />
               <span>Dashboard</span>
             </Link>
             <Link
               href="/create-workout"
-              className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 hover:border-b-2 hover:border-red-500 transition-colors"
+              className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 hover:border-b-2 hover:border-red-600 transition-colors"
             >
               <Plus className="h-4 w-4" />
               <span>Create Workout</span>
             </Link>
             <Link
               href="/clients"
-              className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 hover:border-b-2 hover:border-red-500 transition-colors"
+              className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 hover:border-b-2 hover:border-red-600 transition-colors"
             >
               <Users className="h-4 w-4" />
               <span>My Clients</span>
             </Link>
             <Link
               href="/exercises"
-              className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 hover:border-b-2 hover:border-red-500 transition-colors"
+              className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 hover:border-b-2 hover:border-red-600 transition-colors"
             >
               <Dumbbell className="h-4 w-4" />
               <span>Exercise Library</span>
             </Link>
             <Link
               href="/assign-workout"
-              className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 hover:border-b-2 hover:border-red-500 transition-colors"
+              className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 hover:border-b-2 hover:border-red-600 transition-colors"
             >
               <Calendar className="h-4 w-4" />
               <span>Assign Workout</span>
@@ -808,7 +808,7 @@ export default function TemplatesPage() {
         ) : workouts.length === 0 ? (
           <Card>
             <CardContent className="text-center py-12">
-              <Dumbbell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <Dumbbell className="h-12 w-12 text-gray-500 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">No workouts found</h3>
               <p className="text-gray-600 mb-6">Get started by creating your first workout</p>
               <Link href="/create-workout">
@@ -1084,7 +1084,7 @@ export default function TemplatesPage() {
                               
                               {workout.exercises.length === 0 ? (
                                 <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-lg border">
-                                  <Dumbbell className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                                  <Dumbbell className="h-8 w-8 mx-auto mb-2 text-gray-500" />
                                   <p>No exercises added yet</p>
                                   {workout.creator && workout.creator.id === session.user.id && (
                                     <Button 
@@ -1460,7 +1460,7 @@ export default function TemplatesPage() {
                                         </div>
                                       ) : (
                                         <div className="text-center py-4 text-gray-500 bg-white rounded-lg border">
-                                          <Bed className="h-6 w-6 mx-auto mb-2 text-gray-400" />
+                                          <Bed className="h-6 w-6 mx-auto mb-2 text-gray-500" />
                                           <p>Rest Day</p>
                                           {day.notes && (
                                             <p className="text-sm mt-2">{day.notes}</p>
@@ -1482,7 +1482,7 @@ export default function TemplatesPage() {
                                 </div>
                               ) : (
                                 <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-lg border">
-                                  <FileText className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                                  <FileText className="h-8 w-8 mx-auto mb-2 text-gray-500" />
                                   <p>Program structure not loaded</p>
                                   <p className="text-sm mt-1">Click "Edit Program" to view and modify the workout days</p>
                                 </div>

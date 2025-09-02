@@ -560,7 +560,7 @@ function AssignWorkoutContent() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <p className="mt-4 text-gray-900">Loading...</p>
         </div>
       </div>
     )
@@ -592,12 +592,12 @@ function AssignWorkoutContent() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Link href="/clients">
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 hover:bg-gray-100">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to Clients
                 </Button>
@@ -621,7 +621,7 @@ function AssignWorkoutContent() {
           <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                <svg className="h-5 w-5 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                 </svg>
               </div>
@@ -702,7 +702,7 @@ function AssignWorkoutContent() {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-semibold text-gray-900 flex items-center">
-                    <Dumbbell className="h-5 w-5 mr-2 text-green-600" />
+                    <Dumbbell className="h-5 w-5 mr-2 text-blue-600" />
                     Select Workout
                   </h2>
                   <div className="flex items-center space-x-2">
@@ -746,7 +746,7 @@ function AssignWorkoutContent() {
                     </Button>
 
                     <Link href="/create-workout">
-                      <Button size="sm" variant="outline">
+                      <Button size="sm" variant="outline" className="border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-900">
                         <Plus className="h-4 w-4 mr-1" />
                         New
                       </Button>
@@ -758,7 +758,7 @@ function AssignWorkoutContent() {
                 <div className="bg-white rounded-lg border border-gray-200 p-3 mb-4">
                   <div className="space-y-3">
                     <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
                       <Input
                         placeholder="Search workouts..."
                         value={searchTerm}
@@ -800,7 +800,7 @@ function AssignWorkoutContent() {
                     </div>
                   ) : filteredWorkouts.length === 0 ? (
                     <div className="text-center py-6 text-gray-500">
-                      <Dumbbell className="h-6 w-6 mx-auto mb-2 text-gray-400" />
+                      <Dumbbell className="h-6 w-6 mx-auto mb-2 text-gray-500" />
                       <p className="text-sm">No workouts found</p>
                     </div>
                   ) : (
@@ -945,7 +945,7 @@ function AssignWorkoutContent() {
                                   Day {day.dayNumber}: {day.isRestDay ? 'Rest Day' : `${day.exercises?.length || 0} exercises`}
                                 </span>
                                 {day.isRestDay && (
-                                  <span className="text-gray-400 text-xs">Rest</span>
+                                  <span className="text-gray-500 text-xs">Rest</span>
                                 )}
                               </div>
                             ))}
@@ -1050,7 +1050,7 @@ function AssignWorkoutContent() {
                     <Button
                       onClick={handleAssignWorkout}
                       disabled={isAssigning || scheduledDates.length === 0}
-                      className="w-full h-11 text-base"
+                      className="w-full h-11 text-base bg-blue-600 hover:bg-blue-700 text-white"
                       size="lg"
                     >
                       {isAssigning ? (
@@ -1084,7 +1084,7 @@ function AssignWorkoutContent() {
               </div>
             ) : (
               <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
-                <div className="text-gray-400 mb-4">
+                <div className="text-gray-500 mb-4">
                   {!selectedClient ? (
                     <>
                       <Users className="h-12 w-12 mx-auto mb-3" />
@@ -1280,7 +1280,7 @@ function AssignWorkoutContent() {
                             className={`
                               h-16 w-full text-xs rounded-lg border transition-all duration-200 hover:shadow-md flex flex-col items-center justify-center p-1
                               ${isSelected 
-                                ? 'bg-blue-500 text-white border-blue-500 shadow-md font-semibold' 
+                                ? 'bg-blue-500 text-gray-900 border-blue-500 shadow-md font-semibold' 
                                 : isInProgramSpan && programSpanDay > 0
                                   ? 'bg-blue-200 text-blue-800 border-blue-300 font-medium' // Lighter blue for program span days
                                   : hasExistingWorkout

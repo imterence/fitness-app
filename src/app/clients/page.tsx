@@ -279,8 +279,8 @@ export default function ClientsPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-red-600 mx-auto"></div>
+          <p className="mt-4 text-gray-900">Loading...</p>
         </div>
       </div>
     )
@@ -301,12 +301,12 @@ export default function ClientsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-4 sm:h-16 space-y-4 sm:space-y-0">
             <div className="flex items-center space-x-4">
               <Link href="/dashboard">
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 hover:bg-gray-100">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   <span className="hidden sm:inline">Back to Dashboard</span>
                   <span className="sm:hidden">Back</span>
@@ -317,7 +317,7 @@ export default function ClientsPage() {
             
             <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto">
               <Link href="/create-workout" className="flex-1 sm:flex-none">
-                <Button className="w-full sm:w-auto">
+                <Button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white">
                   <Plus className="h-4 w-4 mr-2" />
                   <span className="hidden sm:inline">Create Workout</span>
                   <span className="sm:hidden">Create</span>
@@ -421,7 +421,7 @@ export default function ClientsPage() {
             <Card>
               <CardContent className="p-6">
                 <div className="flex items-center">
-                  <Users className="h-8 w-8 text-indigo-600" />
+                  <Users className="h-8 w-8 text-red-600" />
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-600">With Trainers</p>
                     <p className="text-2xl font-bold text-gray-900">
@@ -442,8 +442,8 @@ export default function ClientsPage() {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-green-600">Active Subscriptions</p>
-                      <p className="text-2xl font-bold text-green-700">
+                      <p className="text-sm font-medium text-green-800">Active Subscriptions</p>
+                      <p className="text-2xl font-bold text-green-900">
                         {assignedClients.filter(c => c.subscriptionStatus === 'ACTIVE').length}
                       </p>
                     </div>
@@ -456,8 +456,8 @@ export default function ClientsPage() {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-red-600">Inactive Subscriptions</p>
-                      <p className="text-2xl font-bold text-red-700">
+                      <p className="text-sm font-medium text-red-800">Inactive Subscriptions</p>
+                      <p className="text-2xl font-bold text-red-900">
                         {assignedClients.filter(c => c.subscriptionStatus !== 'ACTIVE').length}
                       </p>
                     </div>
@@ -470,8 +470,8 @@ export default function ClientsPage() {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-blue-600">Assigned to Trainers</p>
-                      <p className="text-2xl font-bold text-blue-700">
+                      <p className="text-sm font-medium text-blue-800">Assigned to Trainers</p>
+                      <p className="text-2xl font-bold text-blue-900">
                         {assignedClients.filter(c => c.trainer).length}
                       </p>
                     </div>
@@ -484,8 +484,8 @@ export default function ClientsPage() {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-orange-600">Unassigned</p>
-                      <p className="text-2xl font-bold text-orange-700">
+                      <p className="text-sm font-medium text-orange-800">Unassigned</p>
+                      <p className="text-2xl font-bold text-orange-900">
                         {assignedClients.filter(c => !c.trainer).length}
                       </p>
                     </div>
@@ -517,7 +517,7 @@ export default function ClientsPage() {
                           <User className="h-5 w-5 text-green-600" />
                         </div>
                         <div>
-                          <CardTitle className="text-lg">{client.user.name}</CardTitle>
+                          <CardTitle className="text-lg text-gray-900">{client.user.name}</CardTitle>
                           <Badge variant="outline" className="text-xs">
                             {client.user.role}
                           </Badge>
@@ -545,7 +545,7 @@ export default function ClientsPage() {
                     
                     {/* Subscription Status - Admin Only */}
                     {session?.user?.role === "ADMIN" && (
-                      <div className="space-y-2 text-sm bg-gray-50 p-3 rounded-md mb-3">
+                      <div className="space-y-2 text-sm bg-gray-50 p-3 rounded-md mb-3 border border-gray-200">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center">
                             <input
@@ -554,7 +554,7 @@ export default function ClientsPage() {
                               onChange={() => handleToggleSubscription(client.id, client.subscriptionStatus === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE')}
                               className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded mr-2 cursor-pointer"
                             />
-                            <span className={`font-medium ${client.subscriptionStatus === 'ACTIVE' ? 'text-green-700' : 'text-gray-600'}`}>
+                            <span className={`font-medium ${client.subscriptionStatus === 'ACTIVE' ? 'text-green-800' : 'text-gray-600'}`}>
                               Subscription: {client.subscriptionStatus || 'INACTIVE'}
                             </span>
                           </div>
@@ -566,7 +566,7 @@ export default function ClientsPage() {
                             <select
                               value={client.subscriptionPlan || 'BASIC'}
                               onChange={(e) => handleUpdateSubscriptionPlan(client.id, e.target.value)}
-                              className="text-xs border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-green-500"
+                              className="text-xs border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-green-500 bg-white text-gray-900"
                             >
                               <option value="BASIC">BASIC</option>
                               <option value="PRO">PRO</option>
@@ -577,11 +577,11 @@ export default function ClientsPage() {
                       </div>
                     )}
                     
-                    <div className="pt-3 border-t">
+                    <div className="pt-3 border-t border-gray-200">
                       <Button
                         onClick={() => handleAssignClient(client.id)}
                         disabled={isAssigning === client.id}
-                        className="w-full"
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                         size="sm"
                       >
                         {isAssigning === client.id ? (
@@ -744,13 +744,14 @@ export default function ClientsPage() {
                   </select>
                 </div>
               )}
+
             </div>
           </div>
 
           {assignedClients.length === 0 ? (
             <Card>
               <CardContent className="p-8 text-center">
-                <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <Users className="h-12 w-12 text-gray-500 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No Clients Assigned</h3>
                 <p className="text-gray-600 mb-4">
                   {availableClients.length > 0 
@@ -885,7 +886,7 @@ export default function ClientsPage() {
                           </Button>
                         </Link>
                         <Link href={`/assign-workout?clientId=${client.userId}`} className="flex-1">
-                          <Button size="sm" className="w-full">
+                          <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
                             <Plus className="h-4 w-4 mr-2" />
                             Assign Workout
                           </Button>
@@ -993,7 +994,7 @@ export default function ClientsPage() {
               <Button
                 onClick={() => handleReassignClient(selectedClient.id, selectedTrainerId)}
                 disabled={!selectedTrainerId || isReassigning === selectedClient.id}
-                className="flex-1"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
               >
                 {isReassigning === selectedClient.id ? (
                   <>

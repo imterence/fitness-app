@@ -1,14 +1,4 @@
 name,description,category,difficulty,exercises
-"AA1: Level 1","Anatomical Adaptation 1: Level 1","Custom","INTERMEDIATE","goblet hold rear foot elevated split squat:2:12::|1/2 kneeling single arm cable vertical pull:3:10::|1 arm 1 leg single leg deadlift:3:10::|Single arm Dumbell bench press:3:10::|Lateral Squat:3:10::|1/2 kneeling single arm shoulder press:3:10::|weighted single leg hip thrusts:3:10::|Single Arm dumbell rows:3:10::|Weighted Sit ups:3:10::|standing single leg calf raise:3:10::"
-"AA1: Level 2","Add 2.5% weight
-Lesser reps Heavier weights. ","Custom","INTERMEDIATE","goblet hold rear foot elevated split squat:3:10::|1/2 kneeling single arm cable vertical pull:3:10::"
-"AA2: Level 1","","Custom","INTERMEDIATE","goblet squat:3:10::|lat pull down:3:10::|Plank:3:10::|dumbell or KB deadlift:3:10::"
-"AA2: Level 2","Heavier weights Lesser reps","Custom","INTERMEDIATE","dumbell or KB deadlift:3:10::|goblet squat:3:10::"
-"Core Circuit: Week 1","","Custom","INTERMEDIATE","lying alternating leg raises:3:10::|oblique bicyles:3:10::|mountain climbers:3:10::"
-"Core Circuit Week 2","","Custom","INTERMEDIATE","mountain climbers:3:10::"
-"Core Circuit Week 4","","Custom","INTERMEDIATE","mountain climbers:3:10::"
-"Core Circuit Week 3","","Custom","INTERMEDIATE","crunches:3:8::"
-"AA1: Level 3","Add weight from Level 2.
-Heavier weights, lesser reps. ","Custom","INTERMEDIATE","1/2 kneeling single arm cable vertical pull:2:8::|goblet hold rear foot elevated split squat:3:10::"
-"AA2: Level 3 ","GO HEAVIER 2 reps of everything + 2.5kg!","Custom","INTERMEDIATE","dumbell or KB deadlift:3:10::"
-"Hyrox Competition Prep","High-intensity functional fitness workout for Hyrox competition preparation","Competition","ADVANCED","heel touches (each heel):5:10::|Plank:5:10::|supermans:3:10::|test:5:10::"
+"Beginner Full Body","A complete beginner workout targeting all major muscle groups","Custom","BEGINNER",""
+"Intermediate HIIT","High intensity interval training workout","Custom","INTERMEDIATE",""
+"Core Focus","Workout focused on core strengthening","Custom","BEGINNER",""

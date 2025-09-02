@@ -11,53 +11,29 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // Only admins can update subscription status
+    // Check if user is admin
     if (session.user.role !== "ADMIN") {
-      return NextResponse.json({ error: "Forbidden - Admin access required" }, { status: 403 })
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 })
     }
 
-    const { clientId, subscriptionStatus, subscriptionPlan } = await request.json()
+    const body = await request.json()
+    const { clientId, subscriptionStatus, subscriptionPlan } = body
 
     if (!clientId) {
-      return NextResponse.json({ error: "Missing client ID" }, { status: 400 })
+      return NextResponse.json({ error: "Client ID is required" }, { status: 400 })
     }
 
-    // Prepare update data
+    // Update client subscription
     const updateData: any = {}
     
-    if (subscriptionStatus) {
-      // Validate subscription status
-      const validStatuses = ['ACTIVE', 'INACTIVE', 'EXPIRED', 'CANCELLED', 'PENDING']
-      if (!validStatuses.includes(subscriptionStatus)) {
-        return NextResponse.json({ error: "Invalid subscription status" }, { status: 400 })
-      }
-      
+    if (subscriptionStatus !== undefined) {
       updateData.subscriptionStatus = subscriptionStatus
-      
-      // If setting to INACTIVE, clear subscription plan and dates
-      if (subscriptionStatus === 'INACTIVE') {
-        updateData.subscriptionPlan = null
-        updateData.subscriptionStart = null
-        updateData.subscriptionEnd = null
-      }
     }
     
-    if (subscriptionPlan) {
-      // Validate subscription plan
-      const validPlans = ['BASIC', 'PRO', 'ELITE']
-      if (!validPlans.includes(subscriptionPlan)) {
-        return NextResponse.json({ error: "Invalid subscription plan" }, { status: 400 })
-      }
-      
+    if (subscriptionPlan !== undefined) {
       updateData.subscriptionPlan = subscriptionPlan
-      
-      // If setting a plan, ensure status is ACTIVE
-      if (!updateData.subscriptionStatus) {
-        updateData.subscriptionStatus = 'ACTIVE'
-      }
     }
 
-    // Update the client's subscription information
     const updatedClient = await prisma.client.update({
       where: { id: clientId },
       data: updateData,
@@ -81,12 +57,12 @@ export async function PUT(request: Request) {
     })
 
     return NextResponse.json({
-      message: "Subscription status updated successfully",
-      client: updatedClient
+      client: updatedClient,
+      message: "Subscription updated successfully"
     })
 
   } catch (error) {
-    console.error("Error updating subscription status:", error)
+    console.error("Error updating subscription:", error)
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

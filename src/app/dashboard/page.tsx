@@ -195,16 +195,14 @@ export default function DashboardPage() {
                   onClick={handleWorkoutBuilderClick}
                 >
                   <Plus className="h-4 w-4" />
-                  <span>New Workout</span>
+                  <span>Create Workout</span>
                 </Button>
               )}
-              <div className="flex items-center space-x-2">
-                <User className="h-4 w-4 text-gray-400" />
-                <span className="text-sm text-gray-700">{user.role}</span>
-              </div>
-              <Button variant="outline" onClick={handleSignOut} className="flex items-center space-x-2">
-                <LogOut className="h-4 w-4" />
-                <span>Sign Out</span>
+              <Button 
+                variant="ghost" 
+                onClick={() => signOut()}
+              >
+                Sign Out
               </Button>
             </div>
           </div>
@@ -217,7 +215,7 @@ export default function DashboardPage() {
           <div className="flex space-x-8">
             <button
               onClick={handleHomeClick}
-              className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-red-500 transition-colors"
+              className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-red-600 transition-colors"
             >
               <Home className="h-4 w-4" />
               <span>Dashboard</span>
@@ -226,28 +224,28 @@ export default function DashboardPage() {
               <>
                 <Link
                   href="/clients"
-                  className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-red-500 transition-colors"
+                  className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-red-600 transition-colors"
                 >
                   <Users className="h-4 w-4" />
                   <span>Clients</span>
                 </Link>
                 <Link
                   href="/assign-workout"
-                  className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-red-500 transition-colors"
+                  className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-red-600 transition-colors"
                 >
                   <Plus className="h-4 w-4" />
                   <span>Assign Workout</span>
                 </Link>
                 <button
                   onClick={handleWorkoutLibraryClick}
-                  className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-red-500 transition-colors"
+                  className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-red-600 transition-colors"
                 >
                   <FileText className="h-4 w-4" />
                   <span>Workout Library</span>
                 </button>
                 <Link
                   href="/exercises"
-                  className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-red-500 transition-colors"
+                  className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-red-600 transition-colors"
                 >
                   <Dumbbell className="h-4 w-4" />
                   <span>Exercise Library</span>
@@ -257,14 +255,14 @@ export default function DashboardPage() {
               <>
                 <Link
                   href="/coach"
-                  className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-red-500 transition-colors"
+                  className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-red-600 transition-colors"
                 >
                   <User className="h-4 w-4" />
                   <span>My Coach</span>
                 </Link>
                 <Link
                   href="/progress"
-                  className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-red-500 transition-colors"
+                  className="flex items-center space-x-2 py-4 px-2 text-gray-600 hover:text-gray-900 border-b-2 border-transparent hover:border-red-600 transition-colors"
                 >
                   <TrendingUp className="h-4 w-4" />
                   <span>Progress</span>
@@ -313,7 +311,7 @@ export default function DashboardPage() {
                 <Dumbbell className="h-8 w-8 text-green-600" />
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">
-                    {isTrainer ? "Workouts" : "Total Workouts"}
+                    {isTrainer ? "Workouts Created" : "Workouts Assigned"}
                   </p>
                   <p className="text-2xl font-bold text-gray-900">{workoutCount}</p>
                 </div>
@@ -327,7 +325,7 @@ export default function DashboardPage() {
                 <Calendar className="h-8 w-8 text-purple-600" />
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">
-                    {isTrainer ? "My Assignments" : "Total Assignments"}
+                    {isTrainer ? "Active Assignments" : "Completed Workouts"}
                   </p>
                   <p className="text-2xl font-bold text-gray-900">{assignments.length}</p>
                 </div>
@@ -335,7 +333,32 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
           
-          
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center">
+                <TrendingUp className="h-8 w-8 text-orange-600" />
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">
+                    {isTrainer ? "This Month" : "This Month"}
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {isTrainer 
+                      ? clients.filter(client => {
+                          const createdAt = new Date(client.createdAt)
+                          const now = new Date()
+                          return createdAt.getMonth() === now.getMonth() && createdAt.getFullYear() === now.getFullYear()
+                        }).length
+                      : assignments.filter((assignment: any) => {
+                          const completedAt = assignment.completedAt ? new Date(assignment.completedAt) : null
+                          const now = new Date()
+                          return completedAt && completedAt.getMonth() === now.getMonth() && completedAt.getFullYear() === now.getFullYear()
+                        }).length
+                    }
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Quick Actions for Trainers */}
@@ -347,7 +370,7 @@ export default function DashboardPage() {
                 <Card className="hover:shadow-md transition-shadow cursor-pointer">
                   <CardContent className="p-6">
                     <div className="flex items-center space-x-3">
-                      <Plus className="h-8 w-8 text-red-500" />
+                      <Plus className="h-8 w-8 text-blue-600" />
                       <div>
                         <h4 className="font-semibold text-gray-900">Create Workout</h4>
                         <p className="text-sm text-gray-600">Build a new workout program</p>
@@ -361,7 +384,7 @@ export default function DashboardPage() {
                 <Card className="hover:shadow-md transition-shadow cursor-pointer">
                   <CardContent className="p-6">
                     <div className="flex items-center space-x-3">
-                      <Users className="h-8 w-8 text-blue-500" />
+                      <Users className="h-8 w-8 text-blue-600" />
                       <div>
                         <h4 className="font-semibold text-gray-900">Manage Clients</h4>
                         <p className="text-sm text-gray-600">View and manage your clients</p>
@@ -375,7 +398,7 @@ export default function DashboardPage() {
                 <Card className="hover:shadow-md transition-shadow cursor-pointer">
                   <CardContent className="p-6">
                     <div className="flex items-center space-x-3">
-                      <Dumbbell className="h-8 w-8 text-green-500" />
+                      <Dumbbell className="h-8 w-8 text-blue-600" />
                       <div>
                         <h4 className="font-semibold text-gray-900">Exercise Library</h4>
                         <p className="text-sm text-gray-600">Browse exercise database</p>
@@ -406,7 +429,7 @@ export default function DashboardPage() {
                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                         <div className="flex-1">
                           <p className="text-sm text-gray-900">Welcome to WhateverFit!</p>
-                          <p className="text-xs text-gray-500">Get started by creating your first workout</p>
+                          <p className="text-xs text-gray-600">Get started by creating your first workout</p>
                         </div>
                       </div>
                     </>
@@ -418,7 +441,7 @@ export default function DashboardPage() {
                     <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                     <div className="flex-1">
                       <p className="text-sm text-gray-900">Admin Dashboard</p>
-                      <p className="text-xs text-gray-500">Manage all trainers, clients, and workout assignments</p>
+                      <p className="text-xs text-gray-600">Manage all trainers, clients, and workout assignments</p>
                     </div>
                   </div>
                   {clients.length > 0 && (
@@ -426,7 +449,7 @@ export default function DashboardPage() {
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                       <div className="flex-1">
                         <p className="text-sm text-gray-900">{clients.length} clients registered</p>
-                        <p className="text-xs text-gray-500">Across all trainers in the system</p>
+                        <p className="text-xs text-gray-600">Across all trainers in the system</p>
                       </div>
                     </div>
                   )}
@@ -435,7 +458,7 @@ export default function DashboardPage() {
                       <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
                       <div className="flex-1">
                         <p className="text-sm text-gray-900">{assignments.length} workout assignments</p>
-                        <p className="text-xs text-gray-500">Active across all clients</p>
+                        <p className="text-xs text-gray-600">Active across all clients</p>
                       </div>
                     </div>
                   )}
@@ -443,10 +466,10 @@ export default function DashboardPage() {
               ) : (
                 <>
                   <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
                     <div className="flex-1">
                       <p className="text-sm text-gray-900">Welcome to WhateverFit!</p>
-                      <p className="text-xs text-gray-500">Your trainer will assign workouts here</p>
+                      <p className="text-xs text-gray-600">Your trainer will assign workouts here</p>
                     </div>
                   </div>
                 </>
@@ -482,16 +505,16 @@ export default function DashboardPage() {
               ) : (
                 <div className="space-y-3">
                   {availableClients.map((client: any) => (
-                    <div key={client.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div key={client.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
                       <div>
                         <h3 className="font-medium text-gray-900">{client.user.name}</h3>
                         <p className="text-sm text-gray-600">{client.user.email}</p>
                       </div>
-                      <Button 
-                        variant="primary" 
-                        size="sm"
-                        onClick={() => handleAssignClient(client.id)}
-                      >
+                                              <Button 
+                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                          size="sm"
+                          onClick={() => handleAssignClient(client.id)}
+                        >
                         Assign to Me
                       </Button>
                     </div>

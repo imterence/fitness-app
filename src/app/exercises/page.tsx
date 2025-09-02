@@ -282,7 +282,7 @@ export default function ExercisesPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600">Access denied. Only trainers can view the exercise library.</p>
+          <p className="text-gray-900">Access denied. Only trainers can view the exercise library.</p>
         </div>
       </div>
     )
@@ -291,12 +291,12 @@ export default function ExercisesPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Link href="/dashboard">
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 hover:bg-gray-100">
                   <Dumbbell className="h-4 w-4 mr-2" />
                   Dashboard
                 </Button>
@@ -304,11 +304,11 @@ export default function ExercisesPage() {
               <h1 className="text-2xl font-bold text-gray-900">Exercise Library</h1>
             </div>
             <div className="flex gap-2">
-              <Button onClick={() => setShowImportForm(true)} variant="outline">
+              <Button onClick={() => setShowImportForm(true)} variant="outline" className="border-gray-300 text-gray-600 hover:bg-gray-100 hover:text-gray-900">
                 <Upload className="h-4 w-4 mr-2" />
                 Import CSV
               </Button>
-              <Button onClick={() => setShowAddForm(true)}>
+              <Button onClick={() => setShowAddForm(true)} className="bg-blue-600 hover:bg-blue-700 text-white">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Exercise
               </Button>
@@ -323,7 +323,7 @@ export default function ExercisesPage() {
         <div className="mb-6 flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
               <Input
                 type="text"
                 placeholder="Search exercises..."
@@ -351,12 +351,12 @@ export default function ExercisesPage() {
         {isLoading ? (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading exercises...</p>
+            <p className="mt-4 text-gray-900">Loading exercises...</p>
           </div>
         ) : filteredExercises.length === 0 ? (
           <Card>
             <CardContent className="text-center py-12">
-              <Dumbbell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <Dumbbell className="h-12 w-12 text-gray-500 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">
                 No exercises found
               </h3>
@@ -614,6 +614,7 @@ export default function ExercisesPage() {
                 <Button
                   onClick={handleAddExercise}
                   disabled={!newExercise.name || !newExercise.description || !newExercise.category}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   <Save className="h-4 w-4 mr-2" />
                   Add Exercise
@@ -812,6 +813,7 @@ export default function ExercisesPage() {
                 <Button
                   onClick={handleUpdateExercise}
                   disabled={!editingExercise.name || !editingExercise.description || !editingExercise.category}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   <Save className="h-4 w-4 mr-2" />
                   Save Changes

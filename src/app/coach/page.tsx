@@ -66,10 +66,10 @@ export default function CoachPage() {
   // Show loading while checking authentication
   if (status === "loading") {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading Coach Information...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto"></div>
+          <p className="mt-4 text-gray-300">Loading Coach Information...</p>
         </div>
       </div>
     )
@@ -83,10 +83,10 @@ export default function CoachPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading coach information...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto"></div>
+          <p className="mt-4 text-gray-300">Loading coach information...</p>
         </div>
       </div>
     )
@@ -94,10 +94,15 @@ export default function CoachPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-600 mb-4">{error}</p>
-          <Button onClick={fetchCoach}>Try Again</Button>
+          <p className="text-red-400 mb-4">{error}</p>
+          <Button 
+            onClick={fetchCoach}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            Try Again
+          </Button>
         </div>
       </div>
     )
@@ -105,31 +110,33 @@ export default function CoachPage() {
 
   if (!coach) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="bg-white shadow-sm border-b">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+        <div className="bg-gray-800/50 backdrop-blur-sm border-b border-gray-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center space-x-4">
               <Link href="/dashboard">
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-gray-700">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Dashboard
                 </Button>
               </Link>
-              <h1 className="text-2xl font-bold text-gray-900">My Coach</h1>
+              <h1 className="text-2xl font-bold text-white">My Coach</h1>
             </div>
           </div>
         </div>
         
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <Card>
+          <Card className="bg-gray-800/90 backdrop-blur-sm border-gray-700 shadow-2xl">
             <CardContent className="p-8 text-center">
               <User className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-medium text-gray-900 mb-2">No Coach Assigned</h3>
-              <p className="text-gray-600 mb-4">
+              <h3 className="text-xl font-medium text-white mb-2">No Coach Assigned</h3>
+              <p className="text-gray-300 mb-4">
                 You haven't been assigned a coach yet. Please contact the administrator to get assigned to a trainer.
               </p>
               <Link href="/dashboard">
-                <Button>Back to Dashboard</Button>
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                  Back to Dashboard
+                </Button>
               </Link>
             </CardContent>
           </Card>
@@ -139,21 +146,21 @@ export default function CoachPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-gray-800/50 backdrop-blur-sm border-b border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Link href="/dashboard">
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-gray-700">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Dashboard
                 </Button>
               </Link>
-              <h1 className="text-2xl font-bold text-gray-900">My Coach</h1>
+              <h1 className="text-2xl font-bold text-white">My Coach</h1>
             </div>
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-gray-300">
               Logged in as: {session.user.name || session.user.email}
             </div>
           </div>
@@ -165,74 +172,74 @@ export default function CoachPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Coach Profile */}
           <div className="lg:col-span-2">
-            <Card>
+            <Card className="bg-gray-800/90 backdrop-blur-sm border-gray-700 shadow-2xl">
               <CardHeader>
                 <div className="flex items-center space-x-4">
-                  <div className="h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center">
-                    <User className="h-8 w-8 text-blue-600" />
+                  <div className="h-16 w-16 bg-red-500/20 rounded-full flex items-center justify-center">
+                    <User className="h-8 w-8 text-red-500" />
                   </div>
                   <div>
-                    <CardTitle className="text-2xl">{coach.name}</CardTitle>
+                    <CardTitle className="text-2xl text-white">{coach.name}</CardTitle>
                     <div className="flex items-center space-x-2 mt-2">
-                      <Badge variant="secondary">{coach.role}</Badge>
-                      <Badge variant="outline">Your Coach</Badge>
+                      <Badge variant="secondary" className="bg-red-500/20 text-red-400 border-red-500/30">{coach.role}</Badge>
+                      <Badge variant="outline" className="border-gray-600 text-gray-300">Your Coach</Badge>
                     </div>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex items-center text-gray-600">
-                    <Mail className="h-5 w-5 mr-3 text-blue-500" />
+                  <div className="flex items-center text-gray-300">
+                    <Mail className="h-5 w-5 mr-3 text-red-500" />
                     <span>{coach.email}</span>
                   </div>
                   
-                  <div className="flex items-center text-gray-600">
-                    <Calendar className="h-5 w-5 mr-3 text-green-500" />
+                  <div className="flex items-center text-gray-300">
+                    <Calendar className="h-5 w-5 mr-3 text-red-500" />
                     <span>Coach since {new Date(coach.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
 
-                <div className="border-t pt-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">About Your Coach</h3>
-                  <p className="text-gray-600 leading-relaxed">
+                <div className="border-t border-gray-700 pt-6">
+                  <h3 className="text-lg font-semibold text-white mb-4">About Your Coach</h3>
+                  <p className="text-gray-300 leading-relaxed">
                     Your coach is dedicated to helping you achieve your fitness goals. They create personalized workout plans, 
                     track your progress, and provide guidance to ensure you're getting the most out of your training sessions.
                   </p>
                 </div>
 
-                <div className="border-t pt-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">What Your Coach Provides</h3>
+                <div className="border-t border-gray-700 pt-6">
+                  <h3 className="text-lg font-semibold text-white mb-4">What Your Coach Provides</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="flex items-start space-x-3">
-                      <Target className="h-5 w-5 text-blue-500 mt-0.5" />
+                      <Target className="h-5 w-5 text-red-500 mt-0.5" />
                       <div>
-                        <p className="font-medium text-gray-900">Personalized Workouts</p>
-                        <p className="text-sm text-gray-600">Custom training plans tailored to your goals</p>
+                        <p className="font-medium text-white">Personalized Workouts</p>
+                        <p className="text-sm text-gray-300">Custom training plans tailored to your goals</p>
                       </div>
                     </div>
                     
                     <div className="flex items-start space-x-3">
-                      <TrendingUp className="h-5 w-5 text-green-500 mt-0.5" />
+                      <TrendingUp className="h-5 w-5 text-red-500 mt-0.5" />
                       <div>
-                        <p className="font-medium text-gray-900">Progress Tracking</p>
-                        <p className="text-sm text-gray-600">Monitor your improvements over time</p>
+                        <p className="font-medium text-white">Progress Tracking</p>
+                        <p className="text-sm text-gray-300">Monitor your improvements over time</p>
                       </div>
                     </div>
                     
                     <div className="flex items-start space-x-3">
-                      <Clock className="h-5 w-5 text-purple-500 mt-0.5" />
+                      <Clock className="h-5 w-5 text-red-500 mt-0.5" />
                       <div>
-                        <p className="font-medium text-gray-900">Flexible Scheduling</p>
-                        <p className="text-sm text-gray-600">Workouts that fit your schedule</p>
+                        <p className="font-medium text-white">Flexible Scheduling</p>
+                        <p className="text-sm text-gray-300">Workouts that fit your schedule</p>
                       </div>
                     </div>
                     
                     <div className="flex items-start space-x-3">
-                      <MessageSquare className="h-5 w-5 text-orange-500 mt-0.5" />
+                      <MessageSquare className="h-5 w-5 text-red-500 mt-0.5" />
                       <div>
-                        <p className="font-medium text-gray-900">Ongoing Support</p>
-                        <p className="text-sm text-gray-600">Guidance and motivation when you need it</p>
+                        <p className="font-medium text-white">Ongoing Support</p>
+                        <p className="text-sm text-gray-300">Guidance and motivation when you need it</p>
                       </div>
                     </div>
                   </div>
@@ -244,27 +251,27 @@ export default function CoachPage() {
           {/* Quick Actions & Stats */}
           <div className="space-y-6">
             {/* Quick Actions */}
-            <Card>
+            <Card className="bg-gray-800/90 backdrop-blur-sm border-gray-700 shadow-2xl">
               <CardHeader>
-                <CardTitle className="text-lg">Quick Actions</CardTitle>
+                <CardTitle className="text-lg text-white">Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <Link href="/schedule" className="w-full">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white">
                     <Calendar className="h-4 w-4 mr-2" />
                     View My Schedule
                   </Button>
                 </Link>
                 
                 <Link href="/workouts" className="w-full">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white">
                     <Target className="h-4 w-4 mr-2" />
                     My Workouts
                   </Button>
                 </Link>
                 
                 <Link href="/progress" className="w-full">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white">
                     <TrendingUp className="h-4 w-4 mr-2" />
                     Track Progress
                   </Button>
@@ -273,28 +280,28 @@ export default function CoachPage() {
             </Card>
 
             {/* Coach Stats */}
-            <Card>
+            <Card className="bg-gray-800/90 backdrop-blur-sm border-gray-700 shadow-2xl">
               <CardHeader>
-                <CardTitle className="text-lg">Coach Stats</CardTitle>
+                <CardTitle className="text-lg text-white">Coach Stats</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Total Clients</span>
-                  <span className="font-semibold text-gray-900">
+                  <span className="text-sm text-gray-300">Total Clients</span>
+                  <span className="font-semibold text-white">
                     {coach.clients ? coach.clients.length : 'N/A'}
                   </span>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Workouts Created</span>
-                  <span className="font-semibold text-gray-900">
+                  <span className="text-sm text-gray-300">Workouts Created</span>
+                  <span className="font-semibold text-white">
                     {coach.createdWorkouts ? coach.createdWorkouts.length : 'N/A'}
                   </span>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Experience</span>
-                  <span className="font-semibold text-gray-900">
+                  <span className="text-sm text-gray-300">Experience</span>
+                  <span className="font-semibold text-white">
                     {(() => {
                       const startDate = new Date(coach.createdAt)
                       const now = new Date()
@@ -307,18 +314,18 @@ export default function CoachPage() {
             </Card>
 
             {/* Contact Info */}
-            <Card>
+            <Card className="bg-gray-800/90 backdrop-blur-sm border-gray-700 shadow-2xl">
               <CardHeader>
-                <CardTitle className="text-lg">Contact Information</CardTitle>
+                <CardTitle className="text-lg text-white">Contact Information</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <div className="flex items-center text-sm text-gray-600">
-                  <Mail className="h-4 w-4 mr-2 text-blue-500" />
+                <div className="flex items-center text-sm text-gray-300">
+                  <Mail className="h-4 w-4 mr-2 text-red-500" />
                   <span>{coach.email}</span>
                 </div>
                 
                 <div className="pt-3">
-                  <Button className="w-full">
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
                     <MessageSquare className="h-4 w-4 mr-2" />
                     Send Message
                   </Button>

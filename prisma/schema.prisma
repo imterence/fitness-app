@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
 }
 
@@ -30,19 +30,19 @@ model User {
 }
 
 model Client {
-  id                String   @id @default(cuid())
-  userId            String   @unique
-  trainerId         String?
-  goals             String?
-  notes             String?
-  subscriptionStatus SubscriptionStatus @default(INACTIVE)
-  subscriptionPlan  SubscriptionPlan?
-  subscriptionStart DateTime?
-  subscriptionEnd   DateTime?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  trainer           User?    @relation("TrainerClients", fields: [trainerId], references: [id], onDelete: Cascade)
-  user              User     @relation("ClientUser", fields: [userId], references: [id], onDelete: Cascade)
+  id                 String    @id @default(cuid())
+  userId             String    @unique
+  trainerId          String?
+  goals              String?
+  notes              String?
+  subscriptionStatus String?   @default("INACTIVE")
+  subscriptionPlan   String?   @default("BASIC")
+  subscriptionStart  DateTime?
+  subscriptionEnd    DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  trainer            User?     @relation("TrainerClients", fields: [trainerId], references: [id], onDelete: Cascade)
+  user               User      @relation("ClientUser", fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Account {
@@ -173,34 +173,33 @@ model WorkoutExercise {
 }
 
 model ClientWorkoutProgram {
-  id            String               @id @default(cuid())
-  clientId      String
-  programId     String
-  startDate     DateTime
-  currentDay    Int                  @default(1)
-  status        WorkoutProgramStatus @default(ACTIVE)
-  notes         String?
-  createdAt     DateTime             @default(now())
-  updatedAt     DateTime             @updatedAt
-  client        User                 @relation("ClientWorkoutPrograms", fields: [clientId], references: [id], onDelete: Cascade)
-  program       WorkoutProgram       @relation(fields: [programId], references: [id], onDelete: Cascade)
-  dailyProgress WorkoutDayProgress[]
+  id             String                 @id @default(cuid())
+  clientId       String
+  programId      String
+  startDate      DateTime
+  currentDay     Int                    @default(1)
+  status         WorkoutProgramStatus   @default(ACTIVE)
+  notes          String?
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+  client         User                   @relation("ClientWorkoutPrograms", fields: [clientId], references: [id], onDelete: Cascade)
+  program        WorkoutProgram         @relation(fields: [programId], references: [id], onDelete: Cascade)
   dayAssignments ProgramDayAssignment[]
+  dailyProgress  WorkoutDayProgress[]
 }
 
 model ProgramDayAssignment {
-  id                      String               @id @default(cuid())
-  clientWorkoutProgramId  String
-  dayNumber               Int
-  scheduledDate           DateTime
-  status                  WorkoutStatus        @default(SCHEDULED)
-  notes                   String?
-  completedAt             DateTime?
-  createdAt               DateTime             @default(now())
-  updatedAt               DateTime             @updatedAt
-  
-  clientWorkoutProgram    ClientWorkoutProgram @relation(fields: [clientWorkoutProgramId], references: [id], onDelete: Cascade)
-  
+  id                     String               @id @default(cuid())
+  clientWorkoutProgramId String
+  dayNumber              Int
+  scheduledDate          DateTime
+  status                 WorkoutStatus        @default(SCHEDULED)
+  notes                  String?
+  completedAt            DateTime?
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  clientWorkoutProgram   ClientWorkoutProgram @relation(fields: [clientWorkoutProgramId], references: [id], onDelete: Cascade)
+
   @@unique([clientWorkoutProgramId, dayNumber])
 }
 
@@ -282,18 +281,4 @@ enum WorkoutDayStatus {
   PARTIALLY_COMPLETED
   MISSED
   REST_DAY
-}
-
-enum SubscriptionStatus {
-  ACTIVE
-  INACTIVE
-  EXPIRED
-  CANCELLED
-  PENDING
-}
-
-enum SubscriptionPlan {
-  BASIC
-  PRO
-  ELITE
 }
