@@ -188,18 +188,7 @@ export default function TemplatesPage() {
     }
   }
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'BEGINNER':
-        return 'bg-green-100 text-green-800'
-      case 'INTERMEDIATE':
-        return 'bg-yellow-100 text-yellow-800'
-      case 'ADVANCED':
-        return 'bg-red-100 text-red-800'
-      default:
-        return 'bg-gray-100 text-gray-800'
-    }
-  }
+
 
   const handleCSVImport = async (workouts: any[]) => {
     setIsImporting(true)
@@ -216,7 +205,18 @@ export default function TemplatesPage() {
 
       if (response.ok) {
         const result = await response.json()
-        setSuccessMessage(`Successfully imported ${result.results.length} workouts!`)
+        let message = result.message || `Successfully imported ${result.results.length} workouts!`
+        
+        // Add details about missing exercises if any
+        if (result.results && result.results.some((r: any) => r.missingExercises)) {
+          const workoutsWithMissing = result.results.filter((r: any) => r.missingExercises)
+          message += `\n\nNote: Some exercises were not found in the database:`
+          workoutsWithMissing.forEach((workout: any) => {
+            message += `\n• ${workout.name}: ${workout.missingExercises.join(', ')}`
+          })
+        }
+        
+        setSuccessMessage(message)
         setShowCSVImport(false)
         // Refresh the workouts list
         fetchWorkouts()
@@ -280,10 +280,7 @@ export default function TemplatesPage() {
       setWorkoutUpdates({
         [workoutId]: {
           name: workout.name,
-          description: workout.description,
-          category: workout.category,
-          difficulty: workout.difficulty,
-          isPublic: workout.isPublic
+          description: workout.description
         }
       })
     }
@@ -569,12 +566,22 @@ export default function TemplatesPage() {
 
   const addExerciseToWorkout = async () => {
     if (!newExercise.name.trim() || !newExercise.exerciseId || !newExercise.workoutId) {
+      setError('Please select an exercise from the library')
+      return
+    }
+
+    // Additional validation for multi-day workouts
+    if (newExercise.workoutType === 'multi-day' && newExercise.dayNumber === undefined) {
+      setError('Please select a day for the multi-day workout program')
       return
     }
 
     try {
       const workout = workouts.find(w => w.id === newExercise.workoutId)
-      if (!workout) return
+      if (!workout) {
+        setError('Workout not found. Please refresh the page and try again.')
+        return
+      }
 
       if (workout.type === 'single-day') {
         // Add to single-day workout
@@ -625,6 +632,7 @@ export default function TemplatesPage() {
           })
         } else {
           const errorData = await response.json()
+          console.error('Error adding exercise to workout:', errorData)
           setError(errorData.error || 'Failed to add exercise')
         }
       } else if (workout.type === 'multi-day' && newExercise.dayNumber !== undefined) {
@@ -681,6 +689,7 @@ export default function TemplatesPage() {
           })
         } else {
           const errorData = await response.json()
+          console.error('Error adding exercise to program:', errorData)
           setError(errorData.error || 'Failed to add exercise to program')
         }
       }
@@ -782,9 +791,15 @@ export default function TemplatesPage() {
         {/* Success Message */}
         {successMessage && (
           <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
-            <div className="flex items-center">
-              <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
-              <p className="text-green-800 font-medium">{successMessage}</p>
+            <div className="flex items-start">
+              <CheckCircle className="h-5 w-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
+              <div className="text-green-800 font-medium">
+                {successMessage.split('\n').map((line, index) => (
+                  <p key={index} className={index === 0 ? 'font-semibold' : 'font-normal mt-1'}>
+                    {line}
+                  </p>
+                ))}
+              </div>
             </div>
           </div>
         )}
@@ -833,6 +848,11 @@ export default function TemplatesPage() {
                             Public
                           </span>
                         )}
+                        {workout.creator && workout.creator.id === session.user.id && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            Your Workout
+                          </span>
+                        )}
                       </div>
                     </div>
                     <div className="min-h-[3rem]">
@@ -858,12 +878,6 @@ export default function TemplatesPage() {
                           {workout.type === 'multi-day' ? `${workout.totalDays}d` : '1d'}
                         </span>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-gray-500">Level:</span>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(workout.difficulty)}`}>
-                          {workout.difficulty || 'N/A'}
-                        </span>
-                      </div>
                       {workout.type === 'single-day' ? (
                         <div className="flex items-center space-x-2">
                           <span className="text-gray-500">Exercises:</span>
@@ -875,9 +889,9 @@ export default function TemplatesPage() {
                           <span className="font-medium">{workout.totalDays}</span>
                         </div>
                       )}
-                      <div className="flex items-center space-x-2">
-                        <span className="text-gray-500">Category:</span>
-                        <span className="font-medium truncate">{workout.category || 'Custom'}</span>
+                      <div className="flex items-center space-x-2 col-span-2">
+                        <span className="text-gray-500">Created by:</span>
+                        <span className="font-medium truncate">{workout.creator?.name || 'Unknown'}</span>
                       </div>
                     </div>
                     
@@ -907,7 +921,8 @@ export default function TemplatesPage() {
                             variant="outline"
                             size="sm"
                             onClick={() => handleDeleteWorkout(workout.id, workout.type)}
-                            className="text-red-600 border-red-200 hover:bg-red-50 px-3"
+                            className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300 px-3 transition-all duration-200"
+                            title="Delete workout"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -960,7 +975,8 @@ export default function TemplatesPage() {
                                     <Button
                                       variant="outline"
                                       onClick={() => handleDeleteWorkout(workout.id, workout.type)}
-                                      className="text-red-600 border-red-200 hover:bg-red-50"
+                                      className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 hover:border-red-300 transition-all duration-200"
+                                      title="Delete workout"
                                     >
                                       <Trash2 className="h-4 w-4 mr-2" />
                                       Delete
@@ -990,16 +1006,8 @@ export default function TemplatesPage() {
                                 <div className="text-sm text-gray-600">Exercises</div>
                               </div>
                               <div className="text-center p-4 bg-green-50 rounded-lg border">
-                                <div className="text-lg font-bold text-green-600">{workout.estimatedDuration || 0}</div>
+                                <div className="text-lg font-bold text-green-600">{workout.estimatedDuration || 60}</div>
                                 <div className="text-sm text-gray-600">Minutes</div>
-                              </div>
-                              <div className="text-center p-4 bg-purple-50 rounded-lg border">
-                                <div className="text-sm font-bold text-purple-600 break-words">{workout.difficulty}</div>
-                                <div className="text-sm text-gray-600">Level</div>
-                              </div>
-                              <div className="text-center p-4 bg-orange-50 rounded-lg border">
-                                <div className="text-lg font-bold text-orange-600">{workout.category || 'Custom'}</div>
-                                <div className="text-sm text-gray-600">Category</div>
                               </div>
                             </div>
 
@@ -1019,52 +1027,6 @@ export default function TemplatesPage() {
                                   {workout.description || 'No description provided'}
                                 </p>
                               )}
-                            </div>
-
-                            {/* Category and Difficulty */}
-                            <div className="grid grid-cols-2 gap-4 mb-6">
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                                {editingWorkout === workout.id ? (
-                                  <select
-                                    value={workoutUpdates[workout.id]?.category || workout.category || ''}
-                                    onChange={(e) => updateWorkoutField(workout.id, 'category', e.target.value)}
-                                    className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                  >
-                                    <option value="">Select category</option>
-                                    <option value="Strength">Strength</option>
-                                    <option value="Cardio">Cardio</option>
-                                    <option value="HIIT">HIIT</option>
-                                    <option value="Flexibility">Flexibility</option>
-                                    <option value="Sports">Sports</option>
-                                    <option value="Custom">Custom</option>
-                                  </select>
-                                ) : (
-                                  <p className="text-sm text-gray-600 p-2 bg-gray-50 rounded border">
-                                    {workout.category || 'Custom'}
-                                  </p>
-                                )}
-                              </div>
-
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Difficulty</label>
-                                {editingWorkout === workout.id ? (
-                                  <select
-                                    value={workoutUpdates[workout.id]?.difficulty || workout.difficulty || ''}
-                                    onChange={(e) => updateWorkoutField(workout.id, 'difficulty', e.target.value)}
-                                    className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                  >
-                                    <option value="">Select difficulty</option>
-                                    <option value="BEGINNER">Beginner</option>
-                                    <option value="INTERMEDIATE">Intermediate</option>
-                                    <option value="ADVANCED">Advanced</option>
-                                  </select>
-                                ) : (
-                                  <p className="text-sm text-gray-600 p-2 bg-gray-50 rounded border">
-                                    {workout.difficulty || 'N/A'}
-                                  </p>
-                                )}
-                              </div>
                             </div>
 
                             {/* Exercises section */}
@@ -1215,14 +1177,6 @@ export default function TemplatesPage() {
                                 <div className="text-lg font-bold text-blue-600">{workout.totalDays}</div>
                                 <div className="text-sm text-gray-600">Days</div>
                               </div>
-                              <div className="text-center p-4 bg-green-50 rounded-lg border">
-                                <div className="text-sm font-bold text-green-600 break-words">{workout.difficulty}</div>
-                                <div className="text-sm text-gray-600">Level</div>
-                              </div>
-                              <div className="text-center p-4 bg-purple-50 rounded-lg border">
-                                <div className="text-lg font-bold text-purple-600">{workout.category || 'Custom'}</div>
-                                <div className="text-sm text-gray-600">Category</div>
-                              </div>
                               <div className="text-center p-4 bg-orange-50 rounded-lg border">
                                 <div className="text-lg font-bold text-orange-600">Program</div>
                                 <div className="text-sm text-gray-600">Type</div>
@@ -1245,52 +1199,6 @@ export default function TemplatesPage() {
                                   {workout.description || 'No description provided'}
                                 </p>
                               )}
-                            </div>
-
-                            {/* Category and Difficulty */}
-                            <div className="grid grid-cols-2 gap-4 mb-6">
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                                {editingWorkout === workout.id ? (
-                                  <select
-                                    value={workoutUpdates[workout.id]?.category || workout.category || ''}
-                                    onChange={(e) => updateWorkoutField(workout.id, 'category', e.target.value)}
-                                    className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                  >
-                                    <option value="">Select category</option>
-                                    <option value="Strength">Strength</option>
-                                    <option value="Cardio">Cardio</option>
-                                    <option value="HIIT">HIIT</option>
-                                    <option value="Flexibility">Flexibility</option>
-                                    <option value="Sports">Sports</option>
-                                    <option value="Custom">Custom</option>
-                                  </select>
-                                ) : (
-                                  <p className="text-sm text-gray-600 p-2 bg-gray-50 rounded border">
-                                    {workout.category || 'Custom'}
-                                  </p>
-                                )}
-                              </div>
-
-                              <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Difficulty</label>
-                                {editingWorkout === workout.id ? (
-                                  <select
-                                    value={workoutUpdates[workout.id]?.difficulty || workout.difficulty || ''}
-                                    onChange={(e) => updateWorkoutField(workout.id, 'difficulty', e.target.value)}
-                                    className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                  >
-                                    <option value="">Select difficulty</option>
-                                    <option value="BEGINNER">Beginner</option>
-                                    <option value="INTERMEDIATE">Intermediate</option>
-                                    <option value="ADVANCED">Advanced</option>
-                                  </select>
-                                ) : (
-                                  <p className="text-sm text-gray-600 p-2 bg-gray-50 rounded border">
-                                    {workout.difficulty || 'N/A'}
-                                  </p>
-                                )}
-                              </div>
                             </div>
 
                             {/* Workout Days */}
@@ -1596,17 +1504,6 @@ export default function TemplatesPage() {
                       <input
                         type="text"
                         value={newExercise.name}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        readOnly
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Category
-                      </label>
-                      <input
-                        type="text"
-                        value={newExercise.category}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         readOnly
                       />

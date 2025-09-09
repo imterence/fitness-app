@@ -51,7 +51,7 @@ export default function LoginPage() {
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `url('https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')`
+          backgroundImage: `url('https://a.storyblok.com/f/301853/2000x1251/ece4100012/assets_106a1791992142efae06db192542ec79_8f806819352f4a96b317d6009da745e3.jpeg/m/2600x0/filters:format(webp)')`
         }}
       />
       
@@ -175,3 +175,4 @@ export default function LoginPage() {
     </div>
   )
 }
+

@@ -23,9 +23,9 @@ export async function PATCH(
     const { name, description, category, difficulty, muscleGroups, equipment, instructions, videoUrl } = await request.json()
 
     // Validate required fields
-    if (!name || !description || !category || !difficulty) {
+    if (!name) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { error: "Exercise name is required" },
         { status: 400 }
       )
     }
@@ -62,9 +62,9 @@ export async function PATCH(
       where: { id: exerciseId },
       data: {
         name,
-        description,
-        category,
-        difficulty,
+        description: description || "",
+        category: category || "General",
+        difficulty: difficulty || "INTERMEDIATE",
         muscleGroups: muscleGroups || [],
         equipment: equipment || [],
         instructions: instructions || "",

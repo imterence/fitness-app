@@ -21,7 +21,8 @@ import {
   UserMinus,
   RefreshCw,
   CheckCircle,
-  XCircle
+  XCircle,
+  MessageCircle
 } from "lucide-react"
 import Link from "next/link"
 
@@ -65,6 +66,7 @@ export default function ClientsPage() {
   const [selectedClient, setSelectedClient] = useState<Client | null>(null)
   const [trainers, setTrainers] = useState<any[]>([])
   const [selectedTrainerId, setSelectedTrainerId] = useState<string>("")
+  const [isStartingConversation, setIsStartingConversation] = useState<string | null>(null)
 
   useEffect(() => {
     if (status === "authenticated" && session?.user) {
@@ -244,6 +246,43 @@ export default function ClientsPage() {
     } catch (error) {
       console.error('Error updating subscription status:', error)
       setError('Network error')
+    }
+  }
+
+  const handleStartConversation = async (clientId: string) => {
+    console.log("Starting conversation with client:", clientId)
+    console.log("Current user ID:", session?.user?.id)
+    
+    setIsStartingConversation(clientId)
+    setError(null)
+    
+    try {
+      const response = await fetch("/api/chat/conversations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          clientId: clientId,
+          trainerId: session?.user?.id
+        })
+      })
+
+      console.log("Response status:", response.status)
+      const data = await response.json()
+      console.log("Response data:", data)
+
+      if (response.ok) {
+        console.log("Conversation created successfully, redirecting to chat")
+        // Redirect to chat page
+        router.push("/chat")
+      } else {
+        console.error("Failed to start conversation:", data.error)
+        setError(data.error || "Failed to start conversation")
+      }
+    } catch (error) {
+      console.error("Error starting conversation:", error)
+      setError("Network error while starting conversation")
+    } finally {
+      setIsStartingConversation(null)
     }
   }
 
@@ -885,28 +924,54 @@ export default function ClientsPage() {
                             View Schedule
                           </Button>
                         </Link>
+                        <Button 
+                          onClick={() => handleStartConversation(client.userId)}
+                          disabled={isStartingConversation === client.userId}
+                          size="sm" 
+                          className="w-8 h-8 p-0 bg-green-600 hover:bg-green-700 text-white disabled:opacity-50 flex items-center justify-center"
+                        >
+                          {isStartingConversation === client.userId ? (
+                            <RefreshCw className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <MessageCircle className="h-4 w-8" />
+                          )}
+                        </Button>
                         <Link href={`/assign-workout?clientId=${client.userId}`} className="flex-1">
                           <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700 text-white">
                             <Plus className="h-4 w-4 mr-2" />
-                            Assign Workout
+                            Workout
                           </Button>
                         </Link>
                       </div>
                       
                       <div className="flex space-x-2">
                         {session?.user?.role === "ADMIN" && client.trainer && (
-                          <Button
-                            onClick={() => {
-                              setSelectedClient(client)
-                              setShowReassignModal(true)
-                            }}
-                            variant="outline"
-                            size="sm"
-                            className="flex-1 text-blue-600 border-blue-200 hover:bg-blue-50"
-                          >
-                            <User className="h-4 w-4 mr-2" />
-                            Reassign
-                          </Button>
+                          <>
+                            <Button
+                              onClick={() => {
+                                setSelectedClient(client)
+                                setShowReassignModal(true)
+                              }}
+                              variant="outline"
+                              size="sm"
+                              className="flex-1 text-blue-600 border-blue-200 hover:bg-blue-50"
+                            >
+                              <User className="h-4 w-4 mr-2" />
+                              Reassign
+                            </Button>
+                            <Button 
+                              onClick={() => handleStartConversation(client.userId)}
+                              disabled={isStartingConversation === client.userId}
+                              size="sm" 
+                              className="w-8 h-8 p-0 bg-green-600 hover:bg-green-700 text-white disabled:opacity-50 flex items-center justify-center"
+                            >
+                              {isStartingConversation === client.userId ? (
+                                <RefreshCw className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <MessageCircle className="h-4 w-4" />
+                              )}
+                            </Button>
+                          </>
                         )}
                         
                         {session?.user?.role === "ADMIN" && !client.trainer && (

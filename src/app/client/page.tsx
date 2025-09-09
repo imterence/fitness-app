@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, Clock, User, Target, CheckCircle, XCircle, Dumbbell, CalendarDays, LogOut, ChevronLeft, ChevronRight, X } from "lucide-react"
+import { Calendar, Clock, User, Target, CheckCircle, XCircle, Dumbbell, CalendarDays, LogOut, ChevronLeft, ChevronRight, X, MessageCircle } from "lucide-react"
 import Link from "next/link"
 
 interface Exercise {
@@ -354,6 +354,15 @@ export default function ClientPage() {
                 </span>
               </div>
               <span className="text-sm text-gray-300">Welcome, {session.user.name}!</span>
+            </div>
+            
+            <div className="flex items-center space-x-3">
+              <Link href="/chat">
+                <Button variant="outline" size="sm" className="bg-green-600 border-green-500 text-white hover:bg-green-700 hover:text-white hover:border-green-400 transition-all duration-200">
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                  Message Trainer
+                </Button>
+              </Link>
               <Button onClick={signOut} variant="outline" size="sm" className="bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700 hover:text-white hover:border-gray-500 transition-all duration-200">
                 <LogOut className="h-4 w-4 mr-2" />
                 Log Out
@@ -648,9 +657,6 @@ export default function ClientPage() {
                                 </div>
                               )}
                             </div>
-                            <Badge variant="outline" className="text-xs border-gray-600 text-gray-300">
-                              {exercise.exercise.category}
-                            </Badge>
                           </div>
                         </CardContent>
                       </Card>
@@ -722,9 +728,6 @@ export default function ClientPage() {
                                       </div>
                                     )}
                                   </div>
-                                  <Badge variant="outline" className="text-xs border-gray-600 text-gray-300">
-                                    {exercise.exercise.category}
-                                  </Badge>
                                 </div>
                               </CardContent>
                             </Card>

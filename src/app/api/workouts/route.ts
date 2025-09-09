@@ -28,9 +28,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Forbidden - Insufficient permissions" }, { status: 403 })
     }
 
-    const { name, description, exercises, isPublic } = await request.json()
+    const { name, description, exercises } = await request.json()
 
-    console.log("Creating workout with data:", { name, description, exercisesCount: exercises?.length, isPublic })
+    console.log("Creating workout with data:", { name, description, exercisesCount: exercises?.length })
     console.log("Exercises data structure:", JSON.stringify(exercises, null, 2))
     
     // Validate each exercise has the required fields
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
       estimatedDuration: 60,
       creatorId: session.user.id,
       exercisesCount: exercises.length,
-      isPublic: isPublic || false
+      isPublic: true
     })
 
     let workout
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
           category: "Custom",
           difficulty: "INTERMEDIATE" as const,
           estimatedDuration: 60, // Default duration in minutes
-          isPublic: isPublic || false,
+          isPublic: true,
           creatorId: session.user.id,
           exercises: {
             create: exercises.map((exercise: { id: string; name: string; category: string; notes?: string; sets: number; reps: string; rest: string }, index: number) => ({
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
           category: "Custom",
           difficulty: "INTERMEDIATE" as const,
           estimatedDuration: 60,
-          isPublic: isPublic || false,
+          isPublic: true,
           creatorId: session.user.id
         }
       })

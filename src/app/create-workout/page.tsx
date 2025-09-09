@@ -181,11 +181,11 @@ export default function CreateWorkoutPage() {
   const [exerciseCategories, setExerciseCategories] = useState<string[]>([])
 
   const addExercise = () => {
-    if (newExercise.name.trim() && newExercise.category && newExercise.exerciseId) {
+    if (newExercise.name.trim() && newExercise.exerciseId) {
       const exercise: Exercise = {
         id: newExercise.exerciseId, // This should be the exercise ID from the library
         name: newExercise.name,
-        category: newExercise.category,
+        category: "General", // Default category since it's no longer editable
         sets: newExercise.sets,
         reps: newExercise.reps,
         rest: newExercise.rest,
@@ -226,11 +226,11 @@ export default function CreateWorkoutPage() {
 
   // Multi-day exercise management
   const addExerciseToDay = (dayIndex: number) => {
-    if (newExercise.name.trim() && newExercise.category && newExercise.exerciseId) {
+    if (newExercise.name.trim() && newExercise.exerciseId) {
       const exercise: Exercise = {
         id: newExercise.exerciseId, // This should be the exercise ID from the library
         name: newExercise.name,
-        category: newExercise.category,
+        category: "General", // Default category since it's no longer editable
         sets: newExercise.sets,
         reps: newExercise.reps,
         rest: newExercise.rest,
@@ -884,18 +884,6 @@ export default function CreateWorkoutPage() {
                         type="text"
                         value={newExercise.name}
                         onChange={(e) => setNewExercise({ ...newExercise, name: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        readOnly
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Category
-                      </label>
-                      <input
-                        type="text"
-                        value={newExercise.category}
-                        onChange={(e) => setNewExercise({ ...newExercise, category: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         readOnly
                       />

@@ -1,16 +1,16 @@
-workoutType,name,description,category,difficulty,estimatedDuration,isPublic,dayNumber,dayName,isRestDay,exerciseOrder,exerciseName,sets,reps,rest,notes
-single-day,Hyrox Competition Prep,High-intensity functional fitness workout for Hyrox competition preparation,Competition,ADVANCED,45,TRUE,1,Main Workout,FALSE,1,heel touches (each heel),5,10,30s,Explosive movement
-single-day,Hyrox Competition Prep,High-intensity functional fitness workout for Hyrox competition preparation,Competition,ADVANCED,45,TRUE,1,Main Workout,FALSE,2,Plank,5,10,30s,Full squat and throw
-single-day,Hyrox Competition Prep,High-intensity functional fitness workout for Hyrox competition preparation,Competition,ADVANCED,45,TRUE,1,Main Workout,FALSE,3,supermans,3,10,30s,Heavy sled push
-single-day,Hyrox Competition Prep,High-intensity functional fitness workout for Hyrox competition preparation,Competition,ADVANCED,45,TRUE,1,Main Workout,FALSE,4,test,5,10,30s,Max effort rowing
-multi-day,Hyrox Strength Program,Multi-day strength building program for Hyrox athletes,Strength,INTERMEDIATE,60,TRUE,1,Upper Body Strength,FALSE,1,Weighted Sit ups,4,10,30s,Focus on form
-multi-day,Hyrox Strength Program,Multi-day strength building program for Hyrox athletes,Strength,INTERMEDIATE,60,TRUE,1,Upper Body Strength,FALSE,2,Deadlift,4,10,30s,Full range of motion
-multi-day,Hyrox Strength Program,Multi-day strength building program for Hyrox athletes,Strength,INTERMEDIATE,60,TRUE,1,Upper Body Strength,FALSE,3,dumbell or KB deadlift,4,10,30s,Strict press
-multi-day,Hyrox Strength Program,Multi-day strength building program for Hyrox athletes,Strength,INTERMEDIATE,60,TRUE,2,Lower Body Strength,FALSE,1,Lunges,4,10,30s,Deep squat
-multi-day,Hyrox Strength Program,Multi-day strength building program for Hyrox athletes,Strength,INTERMEDIATE,60,TRUE,2,Lower Body Strength,FALSE,2,Deadlift,4,10,30s,Focus on hip hinge
-multi-day,Hyrox Strength Program,Multi-day strength building program for Hyrox athletes,Strength,INTERMEDIATE,60,TRUE,2,Lower Body Strength,FALSE,3,Push-ups,3,10,30s,Alternating legs
-multi-day,Hyrox Strength Program,Multi-day strength building program for Hyrox athletes,Strength,INTERMEDIATE,60,TRUE,3,Rest Day,TRUE,0,Rest,0,10,30s,Active recovery or complete rest
-multi-day,Hyrox Strength Program,Multi-day strength building program for Hyrox athletes,Strength,INTERMEDIATE,60,TRUE,4,Endurance,FALSE,1,Push-ups,5,10,30s,High intensity intervals
-multi-day,Hyrox Strength Program,Multi-day strength building program for Hyrox athletes,Strength,INTERMEDIATE,60,TRUE,4,Endurance,FALSE,2,Push-ups,5,10,30s,Full burpee with push-up
-multi-day,Hyrox Strength Program,Multi-day strength building program for Hyrox athletes,Strength,INTERMEDIATE,60,TRUE,4,Endurance,FALSE,3,Push-ups,5,10,30s,Light weight
-multi-day,Hyrox Strength Program,Multi-day strength building program for Hyrox athletes,Strength,INTERMEDIATE,60,TRUE,4,Endurance,FALSE,4,RANDOM SHIT,5,10,30s,Light weight
+workoutType,name,description,dayNumber,dayName,isRestDay,exerciseOrder,exerciseName,sets,reps,rest,notes
+single-day,Hyrox Competition Prep,High-intensity functional fitness workout for Hyrox competition preparation,1,Main Workout,FALSE,1,Air Squats,5,10,30s,Explosive movement
+single-day,Hyrox Competition Prep,High-intensity functional fitness workout for Hyrox competition preparation,1,Main Workout,FALSE,2,Push-ups,5,10,30s,Full squat and throw
+single-day,Hyrox Competition Prep,High-intensity functional fitness workout for Hyrox competition preparation,1,Main Workout,FALSE,3,Deadlift,3,10,30s,Heavy sled push
+single-day,Hyrox Competition Prep,High-intensity functional fitness workout for Hyrox competition preparation,1,Main Workout,FALSE,4,Row (Machine),5,10,30s,Max effort rowing
+multi-day,Hyrox Strength Program,Multi-day strength building program for Hyrox athletes,1,Upper Body Strength,FALSE,1,Overhead Press,4,10,30s,Focus on form
+multi-day,Hyrox Strength Program,Multi-day strength building program for Hyrox athletes,1,Upper Body Strength,FALSE,2,Bench Press,4,10,30s,Full range of motion
+multi-day,Hyrox Strength Program,Multi-day strength building program for Hyrox athletes,1,Upper Body Strength,FALSE,3,Bent Over Rows,4,10,30s,Strict press
+multi-day,Hyrox Strength Program,Multi-day strength building program for Hyrox athletes,2,Lower Body Strength,FALSE,1,Lunges,4,10,30s,Deep squat
+multi-day,Hyrox Strength Program,Multi-day strength building program for Hyrox athletes,2,Lower Body Strength,FALSE,2,Deadlift,4,10,30s,Focus on hip hinge
+multi-day,Hyrox Strength Program,Multi-day strength building program for Hyrox athletes,2,Lower Body Strength,FALSE,3,Squats,3,10,30s,Alternating legs
+multi-day,Hyrox Strength Program,Multi-day strength building program for Hyrox athletes,3,Rest Day,TRUE,0,Rest,0,10,30s,Active recovery or complete rest
+multi-day,Hyrox Strength Program,Multi-day strength building program for Hyrox athletes,4,Endurance,FALSE,1,Burpees,5,10,30s,High intensity intervals
+multi-day,Hyrox Strength Program,Multi-day strength building program for Hyrox athletes,4,Endurance,FALSE,2,Thrusters,5,10,30s,Full burpee with push-up
+multi-day,Hyrox Strength Program,Multi-day strength building program for Hyrox athletes,4,Endurance,FALSE,3,Kettlebell Swings,5,10,30s,Light weight
+multi-day,Hyrox Strength Program,Multi-day strength building program for Hyrox athletes,4,Endurance,FALSE,4,Box Jumps,5,10,30s,Light weight

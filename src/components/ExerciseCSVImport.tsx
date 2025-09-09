@@ -12,8 +12,6 @@ interface ExerciseCSVRow {
   name: string
   category: string
   description: string
-  muscleGroups: string
-  equipment: string
   difficulty: string
   instructions: string
   videoUrl: string
@@ -24,8 +22,6 @@ interface ParsedExercise {
   description: string
   category: string
   difficulty: string
-  muscleGroups: string[]
-  equipment: string[]
   instructions: string
   videoUrl?: string
 }
@@ -92,8 +88,6 @@ export default function ExerciseCSVImport({ onImport, onCancel }: ExerciseCSVImp
       description: row.description,
       category: row.category,
       difficulty: row.difficulty,
-      muscleGroups: row.muscleGroups ? row.muscleGroups.split(',').map(g => g.trim()).filter(g => g) : [],
-      equipment: row.equipment ? row.equipment.split(',').map(e => e.trim()).filter(e => e) : [],
       instructions: row.instructions || "",
       videoUrl: row.videoUrl || undefined
     }))
@@ -119,7 +113,7 @@ export default function ExerciseCSVImport({ onImport, onCancel }: ExerciseCSVImp
           <div>
             <h3 className="font-medium text-blue-900">Download Template</h3>
             <p className="text-sm text-blue-700">
-              Use our CSV template to ensure proper formatting for exercises. The template includes all required fields.
+              Use our CSV template to ensure proper formatting for exercises. Only the exercise name is required.
             </p>
           </div>
           <Button onClick={downloadTemplate} variant="outline" size="sm">
@@ -185,22 +179,10 @@ export default function ExerciseCSVImport({ onImport, onCancel }: ExerciseCSVImp
                   <div className="font-medium text-gray-900">
                     {exercise.name}
                   </div>
-                  <div className="text-sm text-gray-700">
-                    {exercise.category} • {exercise.difficulty}
-                  </div>
                   <div className="text-sm text-gray-600 mt-1 line-clamp-2">
                     {exercise.description}
                   </div>
-                  {exercise.muscleGroups.length > 0 && (
-                    <div className="text-xs text-gray-500 mt-1">
-                      Muscles: {exercise.muscleGroups.join(', ')}
-                    </div>
-                  )}
-                  {exercise.equipment.length > 0 && (
-                    <div className="text-xs text-gray-500">
-                      Equipment: {exercise.equipment.join(', ')}
-                    </div>
-                  )}
+
                 </div>
               ))}
             </div>

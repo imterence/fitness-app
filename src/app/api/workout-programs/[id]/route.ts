@@ -159,67 +159,80 @@ export async function PATCH(
     }
 
     // Update the workout program basic info if provided
-    if (body.name !== undefined || body.description !== undefined || body.category !== undefined || 
-        body.difficulty !== undefined || body.totalDays !== undefined || body.isPublic !== undefined) {
+    if (body.name !== undefined || body.description !== undefined || body.totalDays !== undefined) {
       await prisma.workoutProgram.update({
         where: { id },
         data: {
           ...(body.name !== undefined && { name: body.name }),
           ...(body.description !== undefined && { description: body.description }),
-          ...(body.category !== undefined && { category: body.category }),
-          ...(body.difficulty !== undefined && { difficulty: body.difficulty }),
           ...(body.totalDays !== undefined && { totalDays: body.totalDays }),
-          ...(body.isPublic !== undefined && { isPublic: body.isPublic })
+          // Always keep these as defaults
+          category: "Custom",
+          difficulty: "INTERMEDIATE",
+          isPublic: true
         }
       })
     }
 
     // Update the workout program days if provided
     if (body.days !== undefined) {
-      // First, delete existing days and exercises
-      await prisma.workoutDayExercise.deleteMany({
-        where: {
-          day: {
-            programId: id
-          }
-        }
-      })
-      await prisma.workoutDay.deleteMany({
-        where: { programId: id }
-      })
-
-      // Then create new days and exercises
-      if (body.days && body.days.length > 0) {
-        for (const day of body.days) {
-          const newDay = await prisma.workoutDay.create({
-            data: {
-              programId: id,
-              dayNumber: day.dayNumber,
-              name: day.name,
-              isRestDay: day.isRestDay,
-              estimatedDuration: day.estimatedDuration,
-              notes: day.notes
+      console.log(`Updating workout program ${id} with ${body.days.length} days`)
+      
+      // Use a transaction to ensure data consistency
+      await prisma.$transaction(async (tx) => {
+        // First, delete existing days and exercises
+        await tx.workoutDayExercise.deleteMany({
+          where: {
+            day: {
+              programId: id
             }
-          })
+          }
+        })
+        await tx.workoutDay.deleteMany({
+          where: { programId: id }
+        })
 
-          // Create exercises for this day if not a rest day
-          if (!day.isRestDay && day.exercises && day.exercises.length > 0) {
-            const exerciseData = day.exercises.map((exercise: any, index: number) => ({
-              dayId: newDay.id,
-              exerciseId: exercise.exercise.id,
-              order: index + 1,
-              sets: exercise.sets,
-              reps: exercise.reps,
-              rest: exercise.rest,
-              notes: exercise.notes
-            }))
-
-            await prisma.workoutDayExercise.createMany({
-              data: exerciseData
+        // Then create new days and exercises
+        if (body.days && body.days.length > 0) {
+          for (const day of body.days) {
+            console.log(`Creating day ${day.dayNumber} for program ${id}`)
+            const newDay = await tx.workoutDay.create({
+              data: {
+                programId: id,
+                dayNumber: day.dayNumber,
+                name: day.name,
+                isRestDay: day.isRestDay,
+                estimatedDuration: day.estimatedDuration,
+                notes: day.notes
+              }
             })
+
+            // Create exercises for this day if not a rest day
+            if (!day.isRestDay && day.exercises && day.exercises.length > 0) {
+              console.log(`Creating ${day.exercises.length} exercises for day ${day.dayNumber}`)
+              // Validate exercise data before creating
+              const exerciseData = day.exercises.map((exercise: any, index: number) => {
+                if (!exercise.exercise || !exercise.exercise.id) {
+                  throw new Error(`Exercise ${index + 1} in day ${day.dayNumber} is missing exercise ID`)
+                }
+                return {
+                  dayId: newDay.id,
+                  exerciseId: exercise.exercise.id,
+                  order: index + 1,
+                  sets: exercise.sets || 1,
+                  reps: exercise.reps || "10",
+                  rest: exercise.rest || "60s",
+                  notes: exercise.notes || ""
+                }
+              })
+
+              await tx.workoutDayExercise.createMany({
+                data: exerciseData
+              })
+            }
           }
         }
-      }
+      })
     }
 
     // Fetch the updated workout program

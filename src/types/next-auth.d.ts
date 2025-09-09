@@ -40,3 +40,4 @@ declare module "next-auth/react" {
   export function signOut(options?: any): Promise<any>
   export function getSession(): Promise<Session | null>
 }
+

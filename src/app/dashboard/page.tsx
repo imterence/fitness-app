@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Calendar, Users, Dumbbell, TrendingUp, Plus, Search, Filter, LogOut, User, Settings, BarChart3, Eye, Edit, Home, FileText, Clock } from "lucide-react"
+import { Calendar, Users, Dumbbell, TrendingUp, Plus, Search, Filter, LogOut, User, Settings, BarChart3, Eye, Edit, Home, FileText, Clock, MessageCircle } from "lucide-react"
 import Link from "next/link"
 
 interface User {
@@ -365,13 +365,13 @@ export default function DashboardPage() {
         {isTrainer && (
           <div className="mb-8">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <Link href="/create-workout">
-                <Card className="hover:shadow-md transition-shadow cursor-pointer">
-                  <CardContent className="p-6">
-                    <div className="flex items-center space-x-3">
-                      <Plus className="h-8 w-8 text-blue-600" />
-                      <div>
+                <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+                  <CardContent className="p-6 h-full flex flex-col">
+                    <div className="flex items-center space-x-3 flex-1">
+                      <Plus className="h-8 w-8 text-blue-600 flex-shrink-0" />
+                      <div className="min-w-0">
                         <h4 className="font-semibold text-gray-900">Create Workout</h4>
                         <p className="text-sm text-gray-600">Build a new workout program</p>
                       </div>
@@ -381,11 +381,11 @@ export default function DashboardPage() {
               </Link>
               
               <Link href="/clients">
-                <Card className="hover:shadow-md transition-shadow cursor-pointer">
-                  <CardContent className="p-6">
-                    <div className="flex items-center space-x-3">
-                      <Users className="h-8 w-8 text-blue-600" />
-                      <div>
+                <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+                  <CardContent className="p-6 h-full flex flex-col">
+                    <div className="flex items-center space-x-3 flex-1">
+                      <Users className="h-8 w-8 text-blue-600 flex-shrink-0" />
+                      <div className="min-w-0">
                         <h4 className="font-semibold text-gray-900">Manage Clients</h4>
                         <p className="text-sm text-gray-600">View and manage your clients</p>
                       </div>
@@ -395,13 +395,77 @@ export default function DashboardPage() {
               </Link>
               
               <Link href="/exercises">
-                <Card className="hover:shadow-md transition-shadow cursor-pointer">
-                  <CardContent className="p-6">
-                    <div className="flex items-center space-x-3">
-                      <Dumbbell className="h-8 w-8 text-blue-600" />
-                      <div>
+                <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+                  <CardContent className="p-6 h-full flex flex-col">
+                    <div className="flex items-center space-x-3 flex-1">
+                      <Dumbbell className="h-8 w-8 text-blue-600 flex-shrink-0" />
+                      <div className="min-w-0">
                         <h4 className="font-semibold text-gray-900">Exercise Library</h4>
                         <p className="text-sm text-gray-600">Browse exercise database</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+
+              <Link href="/chat">
+                <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+                  <CardContent className="p-6 h-full flex flex-col">
+                    <div className="flex items-center space-x-3 flex-1">
+                      <MessageCircle className="h-8 w-8 text-green-600 flex-shrink-0" />
+                      <div className="min-w-0">
+                        <h4 className="font-semibold text-gray-900">Messages</h4>
+                        <p className="text-sm text-gray-600">Chat with your clients</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {/* Quick Actions for Clients */}
+        {isClient && (
+          <div className="mb-8">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <Link href="/schedule">
+                <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+                  <CardContent className="p-6 h-full flex flex-col">
+                    <div className="flex items-center space-x-3 flex-1">
+                      <Calendar className="h-8 w-8 text-blue-600 flex-shrink-0" />
+                      <div className="min-w-0">
+                        <h4 className="font-semibold text-gray-900">My Schedule</h4>
+                        <p className="text-sm text-gray-600">View your workout schedule</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+
+              <Link href="/chat">
+                <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+                  <CardContent className="p-6 h-full flex flex-col">
+                    <div className="flex items-center space-x-3 flex-1">
+                      <MessageCircle className="h-8 w-8 text-green-600 flex-shrink-0" />
+                      <div className="min-w-0">
+                        <h4 className="font-semibold text-gray-900">Messages</h4>
+                        <p className="text-sm text-gray-600">Chat with your trainer</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+
+              <Link href="/templates">
+                <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+                  <CardContent className="p-6 h-full flex flex-col">
+                    <div className="flex items-center space-x-3 flex-1">
+                      <Dumbbell className="h-8 w-8 text-purple-600 flex-shrink-0" />
+                      <div className="min-w-0">
+                        <h4 className="font-semibold text-gray-900">Workout Templates</h4>
+                        <p className="text-sm text-gray-600">Browse available workouts</p>
                       </div>
                     </div>
                   </CardContent>
@@ -534,3 +598,4 @@ export default function DashboardPage() {
     </div>
   )
 }
+

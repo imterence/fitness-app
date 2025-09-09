@@ -113,7 +113,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 })
     }
 
-    const { name, description, category, difficulty, isPublic, days } = await request.json()
+    const { name, description, days } = await request.json()
 
     // Validate required fields
     if (!name || !days || !Array.isArray(days) || days.length === 0) {
@@ -146,9 +146,9 @@ export async function POST(request: NextRequest) {
       data: {
         name,
         description: description || "",
-        category: category || "General",
-        difficulty: difficulty || "INTERMEDIATE",
-        isPublic: isPublic || false,
+        category: "Custom",
+        difficulty: "INTERMEDIATE",
+        isPublic: true,
         totalDays: days.length,
         creatorId: session.user.id,
         days: {

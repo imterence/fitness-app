@@ -1,6 +1,6 @@
 "use client"
 
-import { Dumbbell, Users, Target, Award, Clock, Shield, Zap, ArrowRight, CheckCircle } from "lucide-react"
+import { Dumbbell, Users, Target, Award, Clock, Shield, Zap, ArrowRight } from "lucide-react"
 import Link from "next/link"
 
 export default function SplashPage() {
@@ -30,7 +30,7 @@ export default function SplashPage() {
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
           style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')`
+            backgroundImage: `url('https://a.storyblok.com/f/301853/2000x1251/ece4100012/assets_106a1791992142efae06db192542ec79_8f806819352f4a96b317d6009da745e3.jpeg/m/2600x0/filters:format(webp)')`
           }}
         />
         
@@ -211,155 +211,6 @@ export default function SplashPage() {
               <p className="text-gray-300">
                 Whatever lahhhhhh
               </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Payment Packages Section */}
-      <section className="py-20 px-4 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Choose Your <span className="text-red-500">Plan</span>
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Flexible subscription plans designed to fit your fitness goals and budget
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Basic Plan */}
-            <div className="bg-white rounded-2xl shadow-lg border-2 border-gray-200 hover:border-red-500 transition-all duration-300 transform hover:scale-105">
-              <div className="p-8">
-                <div className="text-center mb-6">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Basic</h3>
-                  <div className="text-4xl font-bold text-red-500 mb-1">$19</div>
-                  <div className="text-gray-500">per month</div>
-                </div>
-                
-                <ul className="space-y-3 mb-8">
-                  <li className="flex items-center text-gray-700">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span>Access to workout library</span>
-                  </li>
-                  <li className="flex items-center text-gray-700">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span>Basic workout tracking</span>
-                  </li>
-                  <li className="flex items-center text-gray-700">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span>Email support</span>
-                  </li>
-                  <li className="flex items-center text-gray-700">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span>Mobile app access</span>
-                  </li>
-                </ul>
-                
-                <Link href="/payment?plan=basic" className="block">
-                  <button className="w-full bg-gray-800 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-700 transition-colors duration-200">
-                    Subscribe with PayPal
-                  </button>
-                </Link>
-              </div>
-            </div>
-
-            {/* Pro Plan */}
-            <div className="bg-white rounded-2xl shadow-xl border-2 border-red-500 relative transform hover:scale-105 transition-all duration-300">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <span className="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
-                  Most Popular
-                </span>
-              </div>
-              <div className="p-8">
-                <div className="text-center mb-6">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Pro</h3>
-                  <div className="text-4xl font-bold text-red-500 mb-1">$39</div>
-                  <div className="text-gray-500">per month</div>
-                </div>
-                
-                <ul className="space-y-3 mb-8">
-                  <li className="flex items-center text-gray-700">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span>Everything in Basic</span>
-                  </li>
-                  <li className="flex items-center text-gray-700">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span>Personalized workout plans</span>
-                  </li>
-                  <li className="flex items-center text-gray-700">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span>Progress analytics</span>
-                  </li>
-                  <li className="flex items-center text-gray-700">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span>Priority support</span>
-                  </li>
-                  <li className="flex items-center text-gray-700">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span>Nutrition guidance</span>
-                  </li>
-                </ul>
-                
-                <Link href="/payment?plan=pro" className="block">
-                  <button className="w-full bg-red-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-red-600 transition-colors duration-200">
-                    Subscribe with PayPal
-                  </button>
-                </Link>
-              </div>
-            </div>
-
-            {/* Elite Plan */}
-            <div className="bg-white rounded-2xl shadow-lg border-2 border-gray-200 hover:border-red-500 transition-all duration-300 transform hover:scale-105">
-              <div className="p-8">
-                <div className="text-center mb-6">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Elite</h3>
-                  <div className="text-4xl font-bold text-red-500 mb-1">$79</div>
-                  <div className="text-gray-500">per month</div>
-                </div>
-                
-                <ul className="space-y-3 mb-8">
-                  <li className="flex items-center text-gray-700">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span>Everything in Pro</span>
-                  </li>
-                  <li className="flex items-center text-gray-700">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span>1-on-1 trainer consultation</span>
-                  </li>
-                  <li className="flex items-center text-gray-700">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span>Custom meal plans</span>
-                  </li>
-                  <li className="flex items-center text-gray-700">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span>24/7 support</span>
-                  </li>
-                  <li className="flex items-center text-gray-700">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                    <span>Exclusive content</span>
-                  </li>
-                </ul>
-                
-                <Link href="/payment?plan=elite" className="block">
-                  <button className="w-full bg-gray-800 text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-700 transition-colors duration-200">
-                    Subscribe with PayPal
-                  </button>
-                </Link>
-              </div>
-            </div>
-          </div>
-          
-          <div className="text-center mt-12">
-            <p className="text-gray-600 mb-4">
-              All plans include secure PayPal payment processing
-            </p>
-            <div className="flex items-center justify-center space-x-2">
-              <span className="text-gray-500">Powered by</span>
-              <div className="bg-blue-600 text-white px-3 py-1 rounded text-sm font-semibold">
-                PayPal
-              </div>
             </div>
           </div>
         </div>

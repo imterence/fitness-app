@@ -24,11 +24,7 @@ Use `exercise-template.csv` as a starting point for importing exercises.
 
 ### Required Columns
 - **name** (required): Exercise name
-- **category** (required): Exercise category (e.g., Strength, Cardio, Core)
-- **difficulty** (required): BEGINNER, INTERMEDIATE, or ADVANCED
 - **description** (optional): Exercise description
-- **muscleGroups** (optional): Comma-separated muscle groups
-- **equipment** (optional): Comma-separated equipment needed
 - **instructions** (optional): Step-by-step instructions
 - **videoUrl** (optional): URL to demonstration video
 
@@ -45,16 +41,18 @@ Use `exercise-template.csv` as a starting point for importing exercises.
 ### Example Data Format
 
 ```csv
-name,category,description,muscleGroups,equipment,difficulty,instructions,videoUrl
-Barbell Squat,Strength,Basic barbell squat exercise,"Quadriceps,Glutes,Hamstrings","Barbell,Squat Rack",INTERMEDIATE,"Stand with feet shoulder-width apart...",
-Push-ups,Strength,Bodyweight push-up exercise,"Chest,Triceps,Shoulders",None,BEGINNER,"Start in plank position...",
+name,description,instructions,videoUrl
+Barbell Squat,Basic barbell squat exercise,Stand with feet shoulder-width apart, place barbell on upper back, squat down until thighs are parallel to ground, then stand back up,
+Deadlift,Classic deadlift exercise,Stand with feet hip-width apart, grip barbell with hands shoulder-width apart, lift bar by extending hips and knees, keep back straight,
+Bench Press,Flat bench press exercise,Lie on bench with feet flat on ground, grip barbell slightly wider than shoulders, lower bar to chest, then press back up,
 ```
 
+**Note:** The template file contains only the header row. Add your exercises below the header.
+
 ### Notes
-- Multiple muscle groups and equipment should be comma-separated
-- Difficulty must be exactly: BEGINNER, INTERMEDIATE, or ADVANCED
 - The script will update existing exercises if they have the same name
-- Empty fields can be left blank or filled with "None"
+- Empty fields can be left blank
+- Exercise names should be unique and descriptive
 
 ## 🔄 Workflow
 
@@ -66,10 +64,11 @@ Push-ups,Strength,Bodyweight push-up exercise,"Chest,Triceps,Shoulders",None,BEG
 ## 📝 Tips for Exercise Data
 
 - Use consistent naming conventions
-- Group similar exercises by category
 - Include detailed instructions for complex movements
 - Add video URLs for proper form demonstration
-- Consider difficulty progression (BEGINNER → INTERMEDIATE → ADVANCED)
+- Keep exercise names clear and descriptive
+
+
 
 
 

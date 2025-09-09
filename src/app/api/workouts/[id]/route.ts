@@ -16,7 +16,7 @@ export async function PATCH(
 
     const { id: workoutId } = await params
     const body = await request.json()
-    const { exercises, name, description, category, difficulty, isPublic } = body
+    const { exercises, name, description } = body
 
     // Check if user is a trainer or admin
     if (session.user.role !== "TRAINER" && session.user.role !== "ADMIN") {
@@ -39,16 +39,16 @@ export async function PATCH(
     }
 
     // Update basic workout information if provided
-    if (name !== undefined || description !== undefined || category !== undefined || 
-        difficulty !== undefined || isPublic !== undefined) {
+    if (name !== undefined || description !== undefined) {
       await prisma.workout.update({
         where: { id: workoutId },
         data: {
           ...(name !== undefined && { name }),
           ...(description !== undefined && { description }),
-          ...(category !== undefined && { category }),
-          ...(difficulty !== undefined && { difficulty }),
-          ...(isPublic !== undefined && { isPublic })
+          // Always keep these as defaults
+          category: "Custom",
+          difficulty: "INTERMEDIATE",
+          isPublic: true
         }
       })
     }

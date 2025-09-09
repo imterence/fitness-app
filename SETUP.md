@@ -87,3 +87,4 @@ src/
 - [ ] Add workout progress tracking
 - [ ] Create mobile app version
 - [ ] Add payment integration
+

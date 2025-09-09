@@ -58,7 +58,6 @@ export default function WorkoutBuilder({ onSave, isLoading = false, editMode = f
   const [isPublic, setIsPublic] = useState(true)
   const [availableExercises, setAvailableExercises] = useState<Exercise[]>([])
   const [exerciseSearch, setExerciseSearch] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState("")
   const [newExercise, setNewExercise] = useState<Omit<Exercise, 'id'> & { dayIndex?: number; exerciseId?: string }>({
     name: "",
     category: "",
@@ -74,7 +73,6 @@ export default function WorkoutBuilder({ onSave, isLoading = false, editMode = f
   // Fetch exercises on component mount
   useEffect(() => {
     fetchAvailableExercises()
-    fetchCategories()
   }, [])
 
   // Initialize workout days when editing or when multi-day is enabled
@@ -86,14 +84,11 @@ export default function WorkoutBuilder({ onSave, isLoading = false, editMode = f
     }
   }, [editMode, initialData, isMultiDay])
 
-  // Filter exercises based on search and category
+  // Filter exercises based on search
   const filteredExercises = availableExercises.filter(exercise =>
-    (exercise.name.toLowerCase().includes(exerciseSearch.toLowerCase()) ||
-     exercise.category.toLowerCase().includes(exerciseSearch.toLowerCase())) &&
-    (selectedCategory === "" || exercise.category === selectedCategory)
+    exercise.name.toLowerCase().includes(exerciseSearch.toLowerCase())
   )
 
-  const [exerciseCategories, setExerciseCategories] = useState<string[]>([])
 
   // Fetch available exercises from the exercise library
   const fetchAvailableExercises = async () => {
@@ -108,26 +103,6 @@ export default function WorkoutBuilder({ onSave, isLoading = false, editMode = f
     }
   }
 
-  // Fetch exercise categories from the database
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch('/api/exercises/categories', {
-        credentials: 'include'
-      })
-      if (response.ok) {
-        const data = await response.json()
-        setExerciseCategories(data.categories || [])
-      } else {
-        console.error('Failed to fetch categories')
-        // Fallback to default categories if API fails
-        setExerciseCategories(["Strength", "Cardio", "Flexibility", "Balance", "Power", "Endurance", "Recovery"])
-      }
-    } catch (error) {
-      console.error('Error fetching categories:', error)
-      // Fallback to default categories if API fails
-      setExerciseCategories(["Strength", "Cardio", "Flexibility", "Balance", "Power", "Endurance", "Recovery"])
-    }
-  }
 
   // Initialize workout days when multi-day is enabled
   const initializeWorkoutDays = () => {
@@ -607,16 +582,7 @@ export default function WorkoutBuilder({ onSave, isLoading = false, editMode = f
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div>
-                      <label className="block text-sm text-gray-600 mb-1">Category</label>
-                      <input
-                        type="text"
-                        value={exercise.category}
-                        onChange={(e) => updateExercise(exercise.id, 'category', e.target.value)}
-                        className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      />
-                    </div>
+                  <div className="grid grid-cols-3 gap-4">
                     <div>
                       <label className="block text-sm text-gray-600 mb-1">Sets</label>
                       <input
@@ -691,21 +657,11 @@ export default function WorkoutBuilder({ onSave, isLoading = false, editMode = f
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <input
                       type="text"
-                      placeholder="Search exercises by name or category..."
+                      placeholder="Search exercises by name..."
                       value={exerciseSearch}
                       onChange={(e) => setExerciseSearch(e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
-                    <select
-                      value={selectedCategory}
-                      onChange={(e) => setSelectedCategory(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="">All Categories</option>
-                      {exerciseCategories.map(category => (
-                        <option key={category} value={category}>{category}</option>
-                      ))}
-                    </select>
                   </div>
 
                   {availableExercises.length === 0 ? (
@@ -721,7 +677,7 @@ export default function WorkoutBuilder({ onSave, isLoading = false, editMode = f
                                                      onClick={() => {
                              setNewExercise({
                                name: exercise.name,
-                               category: exercise.category || "General",
+                               category: "General", // Default category since it's no longer editable
                                sets: 3,
                                reps: "10",
                                rest: "60s",
@@ -732,9 +688,6 @@ export default function WorkoutBuilder({ onSave, isLoading = false, editMode = f
                            }}
                         >
                           <h5 className="font-semibold text-gray-900 text-lg mb-2">{exercise.name}</h5>
-                          <div className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-1 rounded-full w-fit mb-2">
-                            {exercise.category}
-                          </div>
                           {exercise.description && (
                             <p className="text-sm text-gray-600 leading-relaxed">{exercise.description}</p>
                           )}

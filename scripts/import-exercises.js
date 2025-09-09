@@ -25,15 +25,15 @@ async function importExercisesFromExcel(excelFilePath) {
       const exercise = exercises[i]
       
       // Validate required fields
-      if (!exercise.name || !exercise.category || !exercise.difficulty) {
-        console.warn(`⚠️ Skipping exercise ${i + 1}: Missing required fields`)
+      if (!exercise.name) {
+        console.warn(`⚠️ Skipping exercise ${i + 1}: Missing required name field`)
         continue
       }
       
       // Clean and format data
       const exerciseData = {
         name: exercise.name.trim(),
-        category: exercise.category.trim(),
+        category: exercise.category ? exercise.category.trim() : 'General',
         description: exercise.description ? exercise.description.trim() : null,
         muscleGroups: exercise.muscleGroups ? 
           exercise.muscleGroups.split(',').map(mg => mg.trim()).filter(mg => mg) : 
@@ -41,15 +41,15 @@ async function importExercisesFromExcel(excelFilePath) {
         equipment: exercise.equipment ? 
           exercise.equipment.split(',').map(eq => eq.trim()).filter(eq => eq) : 
           [],
-        difficulty: exercise.difficulty.trim().toUpperCase(),
+        difficulty: exercise.difficulty ? exercise.difficulty.trim().toUpperCase() : 'INTERMEDIATE',
         instructions: exercise.instructions ? exercise.instructions.trim() : null,
         videoUrl: exercise.videoUrl ? exercise.videoUrl.trim() : null
       }
       
-      // Validate difficulty
-      if (!['BEGINNER', 'INTERMEDIATE', 'ADVANCED'].includes(exerciseData.difficulty)) {
-        console.warn(`⚠️ Invalid difficulty for ${exerciseData.name}: ${exerciseData.difficulty}`)
-        exerciseData.difficulty = 'INTERMEDIATE' // Default to intermediate
+      // Validate difficulty if provided
+      if (exercise.difficulty && !['BEGINNER', 'INTERMEDIATE', 'ADVANCED'].includes(exerciseData.difficulty)) {
+        console.warn(`⚠️ Invalid difficulty for ${exerciseData.name}: ${exerciseData.difficulty}, defaulting to INTERMEDIATE`)
+        exerciseData.difficulty = 'INTERMEDIATE'
       }
       
       try {
@@ -110,15 +110,15 @@ async function importExercisesFromCSV(csvFilePath) {
       })
       
       // Validate required fields
-      if (!exercise.name || !exercise.category || !exercise.difficulty) {
-        console.warn(`⚠️ Skipping exercise ${i}: Missing required fields`)
+      if (!exercise.name) {
+        console.warn(`⚠️ Skipping exercise ${i}: Missing required name field`)
         continue
       }
       
       // Clean and format data
       const exerciseData = {
         name: exercise.name.trim(),
-        category: exercise.category.trim(),
+        category: exercise.category ? exercise.category.trim() : 'General',
         description: exercise.description ? exercise.description.trim() : null,
         muscleGroups: exercise.muscleGroups ? 
           exercise.muscleGroups.split(',').map(mg => mg.trim()).filter(mg => mg) : 
@@ -126,15 +126,15 @@ async function importExercisesFromCSV(csvFilePath) {
         equipment: exercise.equipment ? 
           exercise.equipment.split(',').map(eq => eq.trim()).filter(eq => eq) : 
           [],
-        difficulty: exercise.difficulty.trim().toUpperCase(),
+        difficulty: exercise.difficulty ? exercise.difficulty.trim().toUpperCase() : 'INTERMEDIATE',
         instructions: exercise.instructions ? exercise.instructions.trim() : null,
         videoUrl: exercise.videoUrl ? exercise.videoUrl.trim() : null
       }
       
-      // Validate difficulty
-      if (!['BEGINNER', 'INTERMEDIATE', 'ADVANCED'].includes(exerciseData.difficulty)) {
-        console.warn(`⚠️ Invalid difficulty for ${exerciseData.name}: ${exerciseData.difficulty}`)
-        exerciseData.difficulty = 'INTERMEDIATE' // Default to intermediate
+      // Validate difficulty if provided
+      if (exercise.difficulty && !['BEGINNER', 'INTERMEDIATE', 'ADVANCED'].includes(exerciseData.difficulty)) {
+        console.warn(`⚠️ Invalid difficulty for ${exerciseData.name}: ${exerciseData.difficulty}, defaulting to INTERMEDIATE`)
+        exerciseData.difficulty = 'INTERMEDIATE'
       }
       
       try {

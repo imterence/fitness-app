@@ -28,7 +28,6 @@ export default function ExercisesPage() {
   const [exercises, setExercises] = useState<Exercise[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState("")
   const [showAddForm, setShowAddForm] = useState(false)
   const [showImportForm, setShowImportForm] = useState(false)
   const [editingExercise, setEditingExercise] = useState<Exercise | null>(null)
@@ -43,13 +42,11 @@ export default function ExercisesPage() {
     videoUrl: ""
   })
 
-  const [categories, setCategories] = useState<string[]>([])
   const difficulties = ["BEGINNER", "INTERMEDIATE", "ADVANCED"]
 
   useEffect(() => {
     if (session?.user) {
       fetchExercises()
-      fetchCategories()
     }
   }, [session])
 
@@ -68,25 +65,6 @@ export default function ExercisesPage() {
     }
   }
 
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch('/api/exercises/categories', {
-        credentials: 'include'
-      })
-      if (response.ok) {
-        const data = await response.json()
-        setCategories(data.categories || [])
-      } else {
-        console.error('Failed to fetch categories')
-        // Fallback to default categories if API fails
-        setCategories(["Strength", "Cardio", "Flexibility", "Balance", "Plyometrics", "Sports", "Other"])
-      }
-    } catch (error) {
-      console.error('Error fetching categories:', error)
-      // Fallback to default categories if API fails
-      setCategories(["Strength", "Cardio", "Flexibility", "Balance", "Plyometrics", "Sports", "Other"])
-    }
-  }
 
   const handleAddExercise = async () => {
     try {
@@ -262,10 +240,8 @@ export default function ExercisesPage() {
 
   const filteredExercises = exercises.filter(exercise => {
     const matchesSearch = exercise.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         exercise.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         exercise.category.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = !selectedCategory || exercise.category === selectedCategory
-    return matchesSearch && matchesCategory
+                         exercise.description.toLowerCase().includes(searchTerm.toLowerCase())
+    return matchesSearch
   })
 
   if (!session?.user) {
@@ -333,18 +309,6 @@ export default function ExercisesPage() {
               />
             </div>
           </div>
-          <div className="flex gap-2">
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="border border-gray-300 rounded-md px-3 py-2 text-sm"
-            >
-              <option value="">All Categories</option>
-              {categories.map(category => (
-                <option key={category} value={category}>{category}</option>
-              ))}
-            </select>
-          </div>
         </div>
 
         {/* Exercises Grid */}
@@ -361,7 +325,7 @@ export default function ExercisesPage() {
                 No exercises found
               </h3>
               <p className="text-gray-600">
-                {searchTerm || selectedCategory ? 'Try adjusting your search or filters.' : 'No exercises are available yet.'}
+                {searchTerm ? 'Try adjusting your search term.' : 'No exercises are available yet.'}
               </p>
             </CardContent>
           </Card>
@@ -372,18 +336,6 @@ export default function ExercisesPage() {
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <CardTitle className="text-lg">{exercise.name}</CardTitle>
-                    <div className="flex space-x-2">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        exercise.difficulty === 'BEGINNER' ? 'bg-green-100 text-green-800' :
-                        exercise.difficulty === 'INTERMEDIATE' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-red-100 text-red-800'
-                      }`}>
-                        {exercise.difficulty}
-                      </span>
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        {exercise.category}
-                      </span>
-                    </div>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -391,31 +343,9 @@ export default function ExercisesPage() {
                     {exercise.description}
                   </p>
                   
-                  {exercise.muscleGroups.length > 0 && exercise.muscleGroups[0] && (
-                    <div className="mb-3">
-                      <span className="text-xs font-medium text-gray-500">Muscle Groups:</span>
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {exercise.muscleGroups.map((group, index) => (
-                          <span key={index} className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                            {group}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
 
-                  {exercise.equipment.length > 0 && exercise.equipment[0] && (
-                    <div className="mb-3">
-                      <span className="text-xs font-medium text-gray-500">Equipment:</span>
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {exercise.equipment.map((item, index) => (
-                          <span key={index} className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                            {item}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+
+
 
                   <div className="flex space-x-2 mt-4">
                     <Button
@@ -481,104 +411,10 @@ export default function ExercisesPage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="category">Category *</Label>
-                    <select
-                      id="category"
-                      value={newExercise.category}
-                      onChange={(e) => setNewExercise(prev => ({ ...prev, category: e.target.value }))}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2"
-                    >
-                      <option value="">Select Category</option>
-                      {categories.map(category => (
-                        <option key={category} value={category}>{category}</option>
-                      ))}
-                    </select>
-                  </div>
 
-                  <div>
-                    <Label htmlFor="difficulty">Difficulty *</Label>
-                    <select
-                      id="difficulty"
-                      value={newExercise.difficulty}
-                      onChange={(e) => setNewExercise(prev => ({ ...prev, difficulty: e.target.value }))}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2"
-                    >
-                      {difficulties.map(difficulty => (
-                        <option key={difficulty} value={difficulty}>{difficulty}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
 
-                <div>
-                  <Label>Muscle Groups</Label>
-                  <div className="space-y-2">
-                    {newExercise.muscleGroups.map((group, index) => (
-                      <div key={index} className="flex gap-2">
-                        <Input
-                          value={group}
-                          onChange={(e) => updateMuscleGroup(index, e.target.value)}
-                          placeholder="e.g., Chest, Triceps"
-                        />
-                        {newExercise.muscleGroups.length > 1 && (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => removeMuscleGroup(index)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-                    ))}
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={addMuscleGroup}
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Muscle Group
-                    </Button>
-                  </div>
-                </div>
 
-                <div>
-                  <Label>Equipment</Label>
-                  <div className="space-y-2">
-                    {newExercise.equipment.map((item, index) => (
-                      <div key={index} className="flex gap-2">
-                        <Input
-                          value={item}
-                          onChange={(e) => updateEquipment(index, e.target.value)}
-                          placeholder="e.g., Dumbbells, Barbell, None"
-                        />
-                        {newExercise.equipment.length > 1 && (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => removeEquipment(index)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-                    ))}
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={addEquipment}
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Equipment
-                    </Button>
-                  </div>
-                </div>
+
 
                 <div>
                   <Label htmlFor="instructions">Instructions</Label>
@@ -613,7 +449,7 @@ export default function ExercisesPage() {
                 </Button>
                 <Button
                   onClick={handleAddExercise}
-                  disabled={!newExercise.name || !newExercise.description || !newExercise.category}
+                  disabled={!newExercise.name}
                   className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   <Save className="h-4 w-4 mr-2" />
@@ -663,121 +499,10 @@ export default function ExercisesPage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="edit-category">Category *</Label>
-                    <select
-                      id="edit-category"
-                      value={editingExercise.category}
-                      onChange={(e) => setEditingExercise(prev => prev ? { ...prev, category: e.target.value } : null)}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2"
-                    >
-                      {categories.map(category => (
-                        <option key={category} value={category}>{category}</option>
-                      ))}
-                    </select>
-                  </div>
 
-                  <div>
-                    <Label htmlFor="edit-difficulty">Difficulty *</Label>
-                    <select
-                      id="edit-difficulty"
-                      value={editingExercise.difficulty}
-                      onChange={(e) => setEditingExercise(prev => prev ? { ...prev, difficulty: e.target.value } : null)}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2"
-                    >
-                      {difficulties.map(difficulty => (
-                        <option key={difficulty} value={difficulty}>{difficulty}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
 
-                <div>
-                  <Label>Muscle Groups</Label>
-                  <div className="space-y-2">
-                    {editingExercise.muscleGroups.map((group, index) => (
-                      <div key={index} className="flex gap-2">
-                        <Input
-                          value={group}
-                          onChange={(e) => setEditingExercise(prev => prev ? {
-                            ...prev,
-                            muscleGroups: prev.muscleGroups.map((g, i) => i === index ? e.target.value : g)
-                          } : null)}
-                          placeholder="e.g., Chest, Triceps"
-                        />
-                        {editingExercise.muscleGroups.length > 1 && (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setEditingExercise(prev => prev ? {
-                              ...prev,
-                              muscleGroups: prev.muscleGroups.filter((_, i) => i !== index)
-                            } : null)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-                    ))}
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setEditingExercise(prev => prev ? {
-                        ...prev,
-                        muscleGroups: [...prev.muscleGroups, ""]
-                      } : null)}
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Muscle Group
-                    </Button>
-                  </div>
-                </div>
 
-                <div>
-                  <Label>Equipment</Label>
-                  <div className="space-y-2">
-                    {editingExercise.equipment.map((item, index) => (
-                      <div key={index} className="flex gap-2">
-                        <Input
-                          value={item}
-                          onChange={(e) => setEditingExercise(prev => prev ? {
-                            ...prev,
-                            equipment: prev.equipment.map((eq, i) => i === index ? e.target.value : eq)
-                          } : null)}
-                          placeholder="e.g., Dumbbells, Barbell, None"
-                        />
-                        {editingExercise.equipment.length > 1 && (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setEditingExercise(prev => prev ? {
-                              ...prev,
-                              equipment: prev.equipment.filter((_, i) => i !== index)
-                            } : null)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-                    ))}
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setEditingExercise(prev => prev ? {
-                        ...prev,
-                        equipment: [...prev.equipment, ""]
-                      } : null)}
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Equipment
-                    </Button>
-                  </div>
-                </div>
+
 
                 <div>
                   <Label htmlFor="edit-instructions">Instructions</Label>

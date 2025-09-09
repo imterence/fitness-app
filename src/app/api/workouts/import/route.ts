@@ -16,10 +16,6 @@ interface ImportWorkout {
   type: 'single-day' | 'multi-day'
   name: string
   description: string
-  category: string
-  difficulty: string
-  estimatedDuration: number
-  isPublic: boolean
   exercises: ImportExercise[]
   days?: Array<{
     dayNumber: number
@@ -65,6 +61,7 @@ export async function POST(request: NextRequest) {
           // Create single-day workout
           // First, find all existing exercises (case-insensitive)
           const validExercises = []
+          const missingExercises = []
           
           for (const exerciseData of workoutData.exercises) {
             const exercise = await prisma.exercise.findFirst({
@@ -86,6 +83,7 @@ export async function POST(request: NextRequest) {
                 notes: exerciseData.notes
               })
             } else {
+              missingExercises.push(exerciseData.exerciseName)
               console.log(`Skipping exercise "${exerciseData.exerciseName}" - not found in exercise library`)
             }
           }
@@ -93,6 +91,10 @@ export async function POST(request: NextRequest) {
           // Only create workout if it has at least one valid exercise
           if (validExercises.length === 0) {
             console.log(`Skipping workout "${workoutData.name}" - no valid exercises found`)
+            errors.push({
+              name: workoutData.name,
+              error: `No valid exercises found. Missing exercises: ${missingExercises.join(', ')}`
+            })
             continue
           }
 
@@ -100,10 +102,10 @@ export async function POST(request: NextRequest) {
             data: {
               name: workoutData.name,
               description: workoutData.description,
-              category: workoutData.category,
-              difficulty: workoutData.difficulty as any,
-              estimatedDuration: workoutData.estimatedDuration,
-              isPublic: workoutData.isPublic,
+              category: "Custom",
+              difficulty: "INTERMEDIATE",
+              estimatedDuration: 60,
+              isPublic: true,
               creatorId: session.user.id,
               exercises: {
                 create: validExercises
@@ -117,12 +119,14 @@ export async function POST(request: NextRequest) {
             id: workout.id,
             name: workout.name,
             exercisesCount: validExercises.length,
-            totalExercisesInCSV: workoutData.exercises.length
+            totalExercisesInCSV: workoutData.exercises.length,
+            missingExercises: missingExercises.length > 0 ? missingExercises : undefined
           })
         } else {
           // Create multi-day workout program
           // First, handle all days and their exercises
           const daysData = []
+          const missingExercises = []
           
           for (const dayData of workoutData.days || []) {
             if (dayData.isRestDay) {
@@ -131,12 +135,13 @@ export async function POST(request: NextRequest) {
                 dayNumber: dayData.dayNumber,
                 name: dayData.name,
                 isRestDay: dayData.isRestDay,
-                estimatedDuration: workoutData.estimatedDuration,
+                estimatedDuration: 60,
                 notes: 'Rest day'
               })
             } else {
               // Active day - find valid exercises
               const validExercises = []
+              const dayMissingExercises = []
               
               for (const exerciseData of dayData.exercises) {
                 const exercise = await prisma.exercise.findFirst({
@@ -158,6 +163,8 @@ export async function POST(request: NextRequest) {
                     notes: exerciseData.notes
                   })
                 } else {
+                  dayMissingExercises.push(exerciseData.exerciseName)
+                  missingExercises.push(`${exerciseData.exerciseName} (Day ${dayData.dayNumber})`)
                   console.log(`Skipping exercise "${exerciseData.exerciseName}" in day ${dayData.name} - not found in exercise library`)
                 }
               }
@@ -168,7 +175,7 @@ export async function POST(request: NextRequest) {
                   dayNumber: dayData.dayNumber,
                   name: dayData.name,
                   isRestDay: dayData.isRestDay,
-                  estimatedDuration: workoutData.estimatedDuration,
+                  estimatedDuration: 60,
                   notes: undefined,
                   exercises: {
                     create: validExercises
@@ -183,6 +190,10 @@ export async function POST(request: NextRequest) {
           // Only create workout program if it has at least one valid day
           if (daysData.length === 0) {
             console.log(`Skipping workout program "${workoutData.name}" - no valid days with exercises found`)
+            errors.push({
+              name: workoutData.name,
+              error: `No valid days with exercises found. Missing exercises: ${missingExercises.join(', ')}`
+            })
             continue
           }
 
@@ -190,10 +201,10 @@ export async function POST(request: NextRequest) {
             data: {
               name: workoutData.name,
               description: workoutData.description,
-              category: workoutData.category,
-              difficulty: workoutData.difficulty as any,
+              category: "Custom",
+              difficulty: "INTERMEDIATE",
               totalDays: daysData.length,
-              isPublic: workoutData.isPublic,
+              isPublic: true,
               creatorId: session.user.id,
               days: {
                 create: daysData
@@ -207,7 +218,8 @@ export async function POST(request: NextRequest) {
             id: workoutProgram.id,
             name: workoutProgram.name,
             daysCount: daysData.length,
-            totalDaysInCSV: workoutData.days?.length || 0
+            totalDaysInCSV: workoutData.days?.length || 0,
+            missingExercises: missingExercises.length > 0 ? missingExercises : undefined
           })
         }
       } catch (error) {
@@ -241,10 +253,25 @@ export async function POST(request: NextRequest) {
       console.log('Errors:', errors)
     }
     
+    // Calculate summary statistics
+    const totalWorkoutsAttempted = workouts.length
+    const totalWorkoutsImported = results.length
+    const totalWorkoutsFailed = errors.length
+    
+    let summaryMessage = `Successfully imported ${totalWorkoutsImported} out of ${totalWorkoutsAttempted} workouts`
+    if (totalWorkoutsFailed > 0) {
+      summaryMessage += ` (${totalWorkoutsFailed} failed)`
+    }
+    
     return NextResponse.json({
-      message: `Successfully imported ${results.length} workouts`,
+      message: summaryMessage,
       results,
-      errors: errors.length > 0 ? errors : undefined
+      errors: errors.length > 0 ? errors : undefined,
+      summary: {
+        totalAttempted: totalWorkoutsAttempted,
+        totalImported: totalWorkoutsImported,
+        totalFailed: totalWorkoutsFailed
+      }
     }, { status: 201 })
 
   } catch (error) {

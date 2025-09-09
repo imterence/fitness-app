@@ -1,4 +1,9 @@
 name,category,description,muscleGroups,equipment,difficulty,instructions,videoUrl
+"""Push-ups""","""Strength""","""Classic bodyweight push-up exercise""","""Chest;Triceps;Shoulders""","""Bodyweight""","INTERMEDIATE","""Start in plank position","lower chest to ground"
+"""Squats""","""Strength""","""Basic bodyweight squat exercise""","""Quadriceps;Glutes;Hamstrings""","""Bodyweight""","INTERMEDIATE","""Stand with feet shoulder-width apart","lower down as if sitting in a chair"
+"""Plank""","""Core""","""Isometric core strengthening exercise""","""Core;Shoulders""","""Bodyweight""","INTERMEDIATE","""Hold a straight line from head to heels","engage core"""
+"""Lunges""","""Strength""","""Single leg strengthening exercise""","""Quadriceps;Glutes;Hamstrings""","""Bodyweight""","INTERMEDIATE","""Step forward into lunge position","lower back knee toward ground"
+"""Burpees""","""Cardio""","""Full body cardio exercise""","""Full Body""","""Bodyweight""","INTERMEDIATE","""Squat down","jump back to plank"
 "Push-ups","Strength","Classic bodyweight push-up exercise","Chest;Triceps;Shoulders","Bodyweight","BEGINNER","Start in plank position, lower chest to ground, push back up",""
 "Squats","Strength","Basic bodyweight squat exercise","Quadriceps;Glutes;Hamstrings","Bodyweight","BEGINNER","Stand with feet shoulder-width apart, lower down as if sitting in a chair, return to standing",""
 "Plank","Core","Isometric core strengthening exercise","Core;Shoulders","Bodyweight","BEGINNER","Hold a straight line from head to heels, engage core",""

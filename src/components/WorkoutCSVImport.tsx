@@ -12,10 +12,6 @@ interface WorkoutCSVRow {
   workoutType: string
   name: string
   description: string
-  category: string
-  difficulty: string
-  estimatedDuration: string
-  isPublic: string
   dayNumber: string
   dayName: string
   isRestDay: string
@@ -31,10 +27,6 @@ interface ParsedWorkout {
   type: 'single-day' | 'multi-day'
   name: string
   description: string
-  category: string
-  difficulty: string
-  estimatedDuration: number
-  isPublic: boolean
   exercises: Array<{
     exerciseName: string
     sets: number
@@ -125,10 +117,6 @@ export default function WorkoutCSVImport({ onImport, onCancel }: WorkoutCSVImpor
           type: row.workoutType as 'single-day' | 'multi-day',
           name: row.name,
           description: row.description,
-          category: row.category,
-          difficulty: row.difficulty as any,
-          estimatedDuration: parseInt(row.estimatedDuration) || 0,
-          isPublic: row.isPublic.toLowerCase() === 'true',
           exercises: [],
           days: row.workoutType === 'multi-day' ? [] : undefined
         })
@@ -269,7 +257,7 @@ export default function WorkoutCSVImport({ onImport, onCancel }: WorkoutCSVImpor
                     {workout.name} ({workout.type})
                   </div>
                   <div className="text-sm text-gray-700">
-                    {workout.category} • {workout.difficulty} • {workout.estimatedDuration}min
+                    {workout.type === 'single-day' ? 'Single Day Workout' : 'Multi-Day Program'}
                   </div>
                   {workout.type === 'single-day' ? (
                     <div className="text-sm text-gray-600 mt-1">
