@@ -168,8 +168,7 @@ export async function PATCH(
           ...(body.totalDays !== undefined && { totalDays: body.totalDays }),
           // Always keep these as defaults
           category: "Custom",
-          difficulty: "INTERMEDIATE",
-          isPublic: true
+          difficulty: "INTERMEDIATE"
         }
       })
     }

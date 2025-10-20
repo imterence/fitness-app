@@ -16,7 +16,7 @@ interface Workout {
   description: string
   category: string
   difficulty: string
-  isPublic: boolean
+  status: 'DRAFT' | 'ACTIVE' | 'ARCHIVED'
   type: 'single-day' | 'multi-day'
   totalDays: number
   estimatedDuration?: number
@@ -258,6 +258,35 @@ export default function TemplatesPage() {
     } catch (error) {
       console.error('Error deleting workout:', error)
       setError('Failed to delete workout')
+    }
+  }
+
+  const handleUpdateWorkoutStatus = async (workoutId: string, workoutType: string, newStatus: 'DRAFT' | 'ACTIVE' | 'ARCHIVED') => {
+    try {
+      let endpoint = `/api/workouts/${workoutId}/approve`
+      if (workoutType === 'multi-day') {
+        endpoint = `/api/workout-programs/${workoutId}/approve`
+      }
+
+      const response = await fetch(endpoint, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus })
+      })
+
+      if (response.ok) {
+        // Refresh the workouts list
+        await fetchWorkouts()
+        setSuccessMessage(`Workout status updated to ${newStatus}!`)
+      } else {
+        const errorData = await response.json()
+        setError(errorData.error || 'Failed to update workout status')
+      }
+    } catch (error) {
+      console.error('Error updating workout status:', error)
+      setError('Failed to update workout status')
     }
   }
 
@@ -843,9 +872,19 @@ export default function TemplatesPage() {
                     <div className="flex items-start justify-between">
                       <CardTitle className="text-base leading-tight">{workout.name}</CardTitle>
                       <div className="flex space-x-2">
-                        {workout.isPublic && (
+                        {workout.status === 'ACTIVE' && (
                           <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            Public
+                            Active
+                          </span>
+                        )}
+                        {workout.status === 'DRAFT' && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            Draft
+                          </span>
+                        )}
+                        {workout.status === 'ARCHIVED' && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            Archived
                           </span>
                         )}
                         {workout.creator && workout.creator.id === session.user.id && (
@@ -907,8 +946,45 @@ export default function TemplatesPage() {
                         {expandedWorkouts.includes(workout.id) ? 'Hide Details' : 'View Details'}
                       </Button>
                       
+                      {/* Status change buttons for trainers */}
+                      {(session.user.role === "TRAINER" || session.user.role === "ADMIN") && (
+                        <div className="flex space-x-2">
+                          {workout.status === 'DRAFT' && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleUpdateWorkoutStatus(workout.id, workout.type, 'ACTIVE')}
+                              className="flex-1 text-green-600 border-green-200 hover:bg-green-50 hover:text-green-700 hover:border-green-300 transition-all duration-200"
+                            >
+                              <CheckCircle className="h-4 w-4 mr-1" />
+                              Approve
+                            </Button>
+                          )}
+                          {workout.status === 'ACTIVE' && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleUpdateWorkoutStatus(workout.id, workout.type, 'ARCHIVED')}
+                              className="flex-1 text-gray-600 border-gray-200 hover:bg-gray-50 hover:text-gray-700 hover:border-gray-300 transition-all duration-200"
+                            >
+                              Archive
+                            </Button>
+                          )}
+                          {workout.status === 'ARCHIVED' && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleUpdateWorkoutStatus(workout.id, workout.type, 'ACTIVE')}
+                              className="flex-1 text-blue-600 border-blue-200 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 transition-all duration-200"
+                            >
+                              Restore
+                            </Button>
+                          )}
+                        </div>
+                      )}
+                      
                       <div className="flex space-x-2">
-                        {(session.user.role === "TRAINER" || session.user.role === "ADMIN") && (
+                        {(session.user.role === "TRAINER" || session.user.role === "ADMIN") && workout.status === 'ACTIVE' && (
                           <Link href={`/assign-workout?workoutId=${workout.id}&type=${workout.type}`} className="flex-1">
                             <Button size="sm" className="w-full">
                               <Calendar className="h-4 w-4 mr-1" />

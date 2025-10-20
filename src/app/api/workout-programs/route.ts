@@ -36,15 +36,15 @@ export async function GET(request: NextRequest) {
     if (session.user.role === "TRAINER" || session.user.role === "ADMIN") {
       if (type === 'own') {
         whereClause.creatorId = session.user.id
-      } else if (type === 'public') {
-        whereClause.isPublic = true
+      } else if (type === 'active') {
+        whereClause.status = 'ACTIVE'
       } else {
         // Default: trainers now see ALL programs (both their own and others')
         // No additional filtering needed
       }
     } else {
-      // Clients can only see public programs
-      whereClause.isPublic = true
+      // Clients can only see active programs
+      whereClause.status = 'ACTIVE'
     }
 
     // Fetch workout programs with days and exercises
@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
         description: description || "",
         category: "Custom",
         difficulty: "INTERMEDIATE",
-        isPublic: true,
+        status: 'DRAFT',
         totalDays: days.length,
         creatorId: session.user.id,
         days: {

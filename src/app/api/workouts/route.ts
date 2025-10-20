@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
       estimatedDuration: 60,
       creatorId: session.user.id,
       exercisesCount: exercises.length,
-      isPublic: true
+      status: 'DRAFT'
     })
 
     let workout
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
           category: "Custom",
           difficulty: "INTERMEDIATE" as const,
           estimatedDuration: 60, // Default duration in minutes
-          isPublic: true,
+          status: 'DRAFT',
           creatorId: session.user.id,
           exercises: {
             create: exercises.map((exercise: { id: string; name: string; category: string; notes?: string; sets: number; reps: string; rest: string }, index: number) => ({
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
           category: "Custom",
           difficulty: "INTERMEDIATE" as const,
           estimatedDuration: 60,
-          isPublic: true,
+          status: 'DRAFT',
           creatorId: session.user.id
         }
       })
@@ -231,10 +231,10 @@ export async function GET(request: NextRequest) {
           }
         })
     } else {
-      // Clients see public workouts
+      // Clients see only active workouts
       workouts = await prisma.workout.findMany({
         where: {
-          isPublic: true,
+          status: 'ACTIVE',
           ...(search && {
             OR: [
               { name: { contains: search, mode: 'insensitive' } },

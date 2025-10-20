@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
               category: "Custom",
               difficulty: "INTERMEDIATE",
               estimatedDuration: 60,
-              isPublic: true,
+              status: 'DRAFT',
               creatorId: session.user.id,
               exercises: {
                 create: validExercises
@@ -204,7 +204,7 @@ export async function POST(request: NextRequest) {
               category: "Custom",
               difficulty: "INTERMEDIATE",
               totalDays: daysData.length,
-              isPublic: true,
+              status: 'DRAFT',
               creatorId: session.user.id,
               days: {
                 create: daysData

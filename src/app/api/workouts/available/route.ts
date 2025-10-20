@@ -39,14 +39,17 @@ export async function GET(request: NextRequest) {
     console.log("🔍 Available workouts API - Query params:", { type, clientId })
 
     // Build where clause based on type and user role
-    let whereClause: any = {}
+    // Only show ACTIVE workouts for assignment
+    let whereClause: any = {
+      status: 'ACTIVE'
+    }
     
     if (session.user.role === "ADMIN") {
-      // Admins see all workouts
-      whereClause = {}
+      // Admins see all ACTIVE workouts
+      whereClause = { status: 'ACTIVE' }
     } else {
-      // Trainers now see ALL workouts (both their own and others')
-      whereClause = {}
+      // Trainers see all ACTIVE workouts (both their own and others')
+      whereClause = { status: 'ACTIVE' }
     }
 
     if (type === 'templates') {
@@ -57,75 +60,75 @@ export async function GET(request: NextRequest) {
       // No additional filtering needed since trainers see all
     }
 
-    // Fetch both single-day workouts and multi-day workout programs
-    const [workouts, workoutPrograms] = await Promise.all([
-      prisma.workout.findMany({
-        where: whereClause,
-        include: {
-          exercises: {
-            include: {
-              exercise: {
-                select: {
-                  id: true,
-                  name: true,
-                  description: true,
-                  category: true,
-                  difficulty: true
-                }
+    // Fetch single-day workouts and multi-day workout programs sequentially
+    // to avoid connection pool exhaustion on Neon's free tier
+    const workouts = await prisma.workout.findMany({
+      where: whereClause,
+      include: {
+        exercises: {
+          include: {
+            exercise: {
+              select: {
+                id: true,
+                name: true,
+                description: true,
+                category: true,
+                difficulty: true
               }
-            },
-            orderBy: {
-              order: 'asc'
             }
           },
-          creator: {
-            select: {
-              id: true,
-              name: true,
-              email: true
-            }
+          orderBy: {
+            order: 'asc'
           }
         },
-        orderBy: [
-          { createdAt: 'desc' }
-        ]
-      }),
-      prisma.workoutProgram.findMany({
-        where: whereClause,
-        include: {
-          days: {
-            include: {
-              exercises: {
-                include: {
-                  exercise: {
-                    select: {
-                      id: true,
-                      name: true,
-                      description: true,
-                      category: true,
-                      difficulty: true
-                    }
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      },
+      orderBy: [
+        { createdAt: 'desc' }
+      ]
+    })
+    
+    const workoutPrograms = await prisma.workoutProgram.findMany({
+      where: whereClause,
+      include: {
+        days: {
+          include: {
+            exercises: {
+              include: {
+                exercise: {
+                  select: {
+                    id: true,
+                    name: true,
+                    description: true,
+                    category: true,
+                    difficulty: true
                   }
                 }
               }
-            },
-            orderBy: {
-              dayNumber: 'asc'
             }
           },
-          creator: {
-            select: {
-              id: true,
-              name: true,
-              email: true
-            }
+          orderBy: {
+            dayNumber: 'asc'
           }
         },
-        orderBy: [
-          { createdAt: 'desc' }
-        ]
-      })
-    ])
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      },
+      orderBy: [
+        { createdAt: 'desc' }
+      ]
+    })
 
     console.log("🔍 Available workouts API - Database results:", {
       singleDayWorkouts: workouts.length,
@@ -165,16 +168,16 @@ export async function GET(request: NextRequest) {
     // If clientId is provided, check if any workouts are already assigned to this client
     let workoutsWithAssignmentStatus = allWorkouts
     if (clientId) {
-      const [clientWorkoutAssignments, clientProgramAssignments] = await Promise.all([
-        prisma.clientWorkout.findMany({
-          where: { clientId },
-          select: { workoutId: true, status: true }
-        }),
-        prisma.clientWorkoutProgram.findMany({
-          where: { clientId },
-          select: { programId: true, status: true }
-        })
-      ])
+      // Fetch assignments sequentially to avoid connection pool exhaustion
+      const clientWorkoutAssignments = await prisma.clientWorkout.findMany({
+        where: { clientId },
+        select: { workoutId: true, status: true }
+      })
+      
+      const clientProgramAssignments = await prisma.clientWorkoutProgram.findMany({
+        where: { clientId },
+        select: { programId: true, status: true }
+      })
 
       workoutsWithAssignmentStatus = allWorkouts.map(workout => {
         if (workout.type === 'single-day') {

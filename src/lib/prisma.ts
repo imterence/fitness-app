@@ -4,15 +4,21 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
-// Enhanced Prisma client configuration for Neon database
+// Enhanced Prisma client configuration for Neon database with connection pooling
 const createPrismaClient = () => {
+  // Optimize connection string for Neon's serverless environment
+  const databaseUrl = process.env.DATABASE_URL
+  const connectionUrl = databaseUrl?.includes('?')
+    ? `${databaseUrl}&connection_limit=1&pool_timeout=0`
+    : `${databaseUrl}?connection_limit=1&pool_timeout=0`
+  
   return new PrismaClient({
     datasources: {
       db: {
-        url: process.env.DATABASE_URL,
+        url: connectionUrl,
       },
     },
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
   })
 }
 

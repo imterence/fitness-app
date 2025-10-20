@@ -56,7 +56,7 @@ interface Workout {
   description: string
   difficulty: string
   estimatedDuration: number
-  isPublic: boolean
+  status: 'DRAFT' | 'ACTIVE' | 'ARCHIVED'
   creator: {
     id: string
     name: string

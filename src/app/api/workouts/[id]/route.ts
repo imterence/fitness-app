@@ -47,8 +47,7 @@ export async function PATCH(
           ...(description !== undefined && { description }),
           // Always keep these as defaults
           category: "Custom",
-          difficulty: "INTERMEDIATE",
-          isPublic: true
+          difficulty: "INTERMEDIATE"
         }
       })
     }

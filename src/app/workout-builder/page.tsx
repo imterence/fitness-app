@@ -24,7 +24,7 @@ interface WorkoutData {
   name: string
   description: string
   exercises: Exercise[]
-  isPublic: boolean
+  status: 'DRAFT' | 'ACTIVE' | 'ARCHIVED'
   isMultiDay?: boolean
   days?: any[]
 }

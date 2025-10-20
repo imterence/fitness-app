@@ -31,7 +31,7 @@ interface WorkoutBuilderProps {
     name: string; 
     description: string; 
     exercises: Exercise[]; 
-    isPublic: boolean;
+    status: 'DRAFT' | 'ACTIVE' | 'ARCHIVED';
     isMultiDay?: boolean;
     days?: WorkoutDay[];
   }) => void
@@ -55,7 +55,7 @@ export default function WorkoutBuilder({ onSave, isLoading = false, editMode = f
   const [exercises, setExercises] = useState<Exercise[]>([])
   const [workoutDays, setWorkoutDays] = useState<WorkoutDay[]>(initialData?.days || [])
   const [showExerciseForm, setShowExerciseForm] = useState(false)
-  const [isPublic, setIsPublic] = useState(true)
+  const [status, setStatus] = useState<'DRAFT' | 'ACTIVE' | 'ARCHIVED'>('DRAFT')
   const [availableExercises, setAvailableExercises] = useState<Exercise[]>([])
   const [exerciseSearch, setExerciseSearch] = useState("")
   const [newExercise, setNewExercise] = useState<Omit<Exercise, 'id'> & { dayIndex?: number; exerciseId?: string }>({
@@ -281,7 +281,7 @@ export default function WorkoutBuilder({ onSave, isLoading = false, editMode = f
           name: workoutName,
           description: workoutDescription,
           exercises: [],
-          isPublic,
+          status,
           isMultiDay: true,
           days: workoutDays
         })
@@ -295,7 +295,7 @@ export default function WorkoutBuilder({ onSave, isLoading = false, editMode = f
           name: workoutName,
           description: workoutDescription,
           exercises,
-          isPublic,
+          status,
           isMultiDay: false
         })
       }
