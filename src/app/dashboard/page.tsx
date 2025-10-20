@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Calendar, Users, Dumbbell, TrendingUp, Plus, Search, Filter, LogOut, User, Settings, BarChart3, Eye, Edit, Home, FileText, Clock, MessageCircle } from "lucide-react"
 import Link from "next/link"
+import MessageNotificationBadge from "@/components/MessageNotificationBadge"
 
 interface User {
   id: string
@@ -412,7 +413,12 @@ export default function DashboardPage() {
                 <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
                   <CardContent className="p-6 h-full flex flex-col">
                     <div className="flex items-center space-x-3 flex-1">
-                      <MessageCircle className="h-8 w-8 text-green-600 flex-shrink-0" />
+                      <div className="relative">
+                        <MessageCircle className="h-8 w-8 text-green-600 flex-shrink-0" />
+                        <div className="absolute -top-2 -right-2">
+                          <MessageNotificationBadge showIcon={false} />
+                        </div>
+                      </div>
                       <div className="min-w-0">
                         <h4 className="font-semibold text-gray-900">Messages</h4>
                         <p className="text-sm text-gray-600">Chat with your clients</p>
@@ -448,7 +454,12 @@ export default function DashboardPage() {
                 <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
                   <CardContent className="p-6 h-full flex flex-col">
                     <div className="flex items-center space-x-3 flex-1">
-                      <MessageCircle className="h-8 w-8 text-green-600 flex-shrink-0" />
+                      <div className="relative">
+                        <MessageCircle className="h-8 w-8 text-green-600 flex-shrink-0" />
+                        <div className="absolute -top-2 -right-2">
+                          <MessageNotificationBadge showIcon={false} />
+                        </div>
+                      </div>
                       <div className="min-w-0">
                         <h4 className="font-semibold text-gray-900">Messages</h4>
                         <p className="text-sm text-gray-600">Chat with your trainer</p>

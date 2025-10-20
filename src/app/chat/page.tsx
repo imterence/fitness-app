@@ -5,8 +5,9 @@ import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import ConversationList from "@/components/ConversationList"
 import ChatInterface from "@/components/ChatInterface"
+import AITrainerChat from "@/components/AITrainerChat"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { MessageCircle, Users, ArrowLeft } from "lucide-react"
+import { MessageCircle, Users, ArrowLeft, Bot, Sparkles } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
@@ -48,6 +49,7 @@ export default function ChatPage() {
   const [selectedConversationId, setSelectedConversationId] = useState<string>()
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [chatMode, setChatMode] = useState<"human" | "ai">("human") // Toggle between human trainer and AI
 
   useEffect(() => {
     if (status === "loading") return
@@ -119,23 +121,55 @@ export default function ChatPage() {
               <h1 className="text-2xl font-bold text-gray-900">Messages</h1>
             </div>
           </div>
-          <div className="text-sm text-gray-500">
-            {session.user.role === "CLIENT" ? "Chat with your trainer" : "Chat with your clients"}
+
+          {/* Chat Mode Toggle */}
+          <div className="flex items-center bg-gray-100 rounded-lg p-1 gap-1">
+            <button
+              onClick={() => setChatMode("human")}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+                chatMode === "human"
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              <Users className="h-4 w-4" />
+              {session.user.role === "CLIENT" ? "My Trainer" : "My Clients"}
+            </button>
+            <button
+              onClick={() => setChatMode("ai")}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+                chatMode === "ai"
+                  ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              <Bot className="h-4 w-4" />
+              <span className="flex items-center gap-1">
+                Coach AI
+                <Sparkles className="h-3 w-3" />
+              </span>
+            </button>
           </div>
         </div>
       </div>
 
       {/* Chat Interface */}
       <div className="flex h-[calc(100vh-80px)]">
-        <ConversationList
-          onConversationSelect={handleConversationSelect}
-          selectedConversationId={selectedConversationId}
-        />
-        <ChatInterface
-          conversations={conversations}
-          onConversationSelect={handleConversationSelect}
-          selectedConversationId={selectedConversationId}
-        />
+        {chatMode === "human" ? (
+          <>
+            <ConversationList
+              onConversationSelect={handleConversationSelect}
+              selectedConversationId={selectedConversationId}
+            />
+            <ChatInterface
+              conversations={conversations}
+              onConversationSelect={handleConversationSelect}
+              selectedConversationId={selectedConversationId}
+            />
+          </>
+        ) : (
+          <AITrainerChat />
+        )}
       </div>
     </div>
   )
