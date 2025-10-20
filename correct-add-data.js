@@ -96,7 +96,7 @@ async function correctAddData() {
         category: 'Custom',
         difficulty: 'BEGINNER',
         estimatedDuration: 30,
-        isPublic: true,
+        status: 'ACTIVE',
         creatorId: adminUser.id
       },
       {
@@ -105,7 +105,7 @@ async function correctAddData() {
         category: 'Custom',
         difficulty: 'INTERMEDIATE',
         estimatedDuration: 45,
-        isPublic: true,
+        status: 'ACTIVE',
         creatorId: adminUser.id
       },
       {
@@ -114,7 +114,7 @@ async function correctAddData() {
         category: 'Custom',
         difficulty: 'BEGINNER',
         estimatedDuration: 25,
-        isPublic: true,
+        status: 'ACTIVE',
         creatorId: adminUser.id
       }
     ]

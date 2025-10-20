@@ -111,7 +111,7 @@ async function restoreData() {
                 difficulty,
                 exercises: exercises || '[]',
                 estimatedDuration: 60, // Default duration
-                isPublic: true,
+                status: 'ACTIVE',
                 creatorId: adminUser.id
               }
             })

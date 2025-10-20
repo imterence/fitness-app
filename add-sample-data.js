@@ -96,7 +96,7 @@ async function addSampleData() {
           { exercise: { name: 'Plank' }, sets: 3, reps: '30 seconds', order: 3 }
         ]),
         estimatedDuration: 30,
-        isPublic: true,
+        status: 'ACTIVE',
         creatorId: adminUser.id
       },
       {
@@ -111,7 +111,7 @@ async function addSampleData() {
           { exercise: { name: 'Squats' }, sets: 3, reps: '15-20', order: 4 }
         ]),
         estimatedDuration: 45,
-        isPublic: true,
+        status: 'ACTIVE',
         creatorId: adminUser.id
       },
       {
@@ -125,7 +125,7 @@ async function addSampleData() {
           { exercise: { name: 'Push-ups' }, sets: 2, reps: '8', order: 3 }
         ]),
         estimatedDuration: 25,
-        isPublic: true,
+        status: 'ACTIVE',
         creatorId: adminUser.id
       }
     ]

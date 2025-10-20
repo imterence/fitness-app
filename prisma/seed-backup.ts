@@ -315,7 +315,7 @@ async function main() {
       category: 'Strength',
       difficulty: 'INTERMEDIATE' as const,
       estimatedDuration: 60,
-      isPublic: true,
+      status: 'ACTIVE',
       creatorId: trainer.id
     }
   })
@@ -374,7 +374,7 @@ async function main() {
       category: 'Cardio',
       difficulty: 'INTERMEDIATE' as const,
       estimatedDuration: 45,
-      isPublic: true,
+      status: 'ACTIVE',
       creatorId: trainer.id
     }
   })
@@ -436,7 +436,7 @@ async function main() {
       category: 'Strength',
       difficulty: 'INTERMEDIATE' as const,
       totalDays: 4,
-      isPublic: true,
+      status: 'ACTIVE',
       creatorId: trainer.id
     }
   })

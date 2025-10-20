@@ -846,7 +846,7 @@ async function main() {
       description: 'Fast-paced circuit workout for Hyrox preparation',
       difficulty: 'INTERMEDIATE' as const,
       estimatedDuration: 30,
-      isPublic: true,
+      status: 'ACTIVE',
       creator: {
         connect: { id: trainer1.id }
       },

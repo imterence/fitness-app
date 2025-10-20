@@ -94,7 +94,7 @@ async function completeRestore() {
                 difficulty: difficulty || 'INTERMEDIATE',
                 exercises: exercises || '[]',
                 estimatedDuration: 60,
-                isPublic: true,
+                status: 'ACTIVE',
                 creatorId: adminUser.id
               }
             })
