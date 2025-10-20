@@ -186,16 +186,23 @@ export default function WorkoutCSVImport({ onImport, onCancel }: WorkoutCSVImpor
       </CardHeader>
       <CardContent className="space-y-6 p-6">
         {/* Template Download */}
-        <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <div className="flex items-center justify-between p-5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border-2 border-blue-200 shadow-sm">
           <div>
-            <h3 className="font-medium text-blue-900">Download Template</h3>
-            <p className="text-sm text-blue-700">
+            <h3 className="font-semibold text-blue-900 flex items-center gap-2">
+              <FileText className="h-5 w-5 text-blue-600" />
+              Download Template
+            </h3>
+            <p className="text-sm text-blue-700 mt-1">
               Use our CSV template to ensure proper formatting for both single-day and multi-day workouts.
             </p>
           </div>
-          <Button onClick={downloadTemplate} variant="outline" size="sm">
+          <Button 
+            onClick={downloadTemplate} 
+            variant="outline" 
+            className="bg-white hover:bg-blue-50 border-2 border-blue-300 text-blue-700 font-medium px-4 py-2 shadow-sm hover:shadow-md transition-all duration-200"
+          >
             <Download className="h-4 w-4 mr-2" />
-            Download Template
+            Download
           </Button>
         </div>
 
@@ -222,17 +229,17 @@ export default function WorkoutCSVImport({ onImport, onCancel }: WorkoutCSVImpor
           <Button 
             onClick={processCSV} 
             disabled={isProcessing}
-            className="w-full"
+            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-6 px-6 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
             {isProcessing ? (
               <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Processing CSV...
+                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                <span className="text-base">Processing CSV...</span>
               </>
             ) : (
               <>
-                <Upload className="h-4 w-4 mr-2" />
-                Process CSV
+                <Upload className="h-5 w-5 mr-2" />
+                <span className="text-base">Process CSV & Preview</span>
               </>
             )}
           </Button>
@@ -276,11 +283,19 @@ export default function WorkoutCSVImport({ onImport, onCancel }: WorkoutCSVImpor
 
         {/* Action Buttons */}
         <div className="flex gap-3 pt-4">
-          <Button onClick={onCancel} variant="outline" className="flex-1">
+          <Button 
+            onClick={onCancel} 
+            variant="outline" 
+            className="flex-1 py-5 text-base border-2 hover:bg-gray-50"
+          >
             Cancel
           </Button>
           {preview.length > 0 && (
-            <Button onClick={handleImport} className="flex-1">
+            <Button 
+              onClick={handleImport} 
+              className="flex-1 py-5 text-base bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200"
+            >
+              <CheckCircle className="h-5 w-5 mr-2" />
               Import {preview.length} Workout{preview.length !== 1 ? 's' : ''}
             </Button>
           )}
